@@ -1,0 +1,15 @@
+{
+  "SolutionExplorer": {
+    "FileNesting": {
+      "AutoNesting": true,
+      "Rules": [
+        // 実装ファイル名 (親) の下に、Iをつけたファイル名 (子) をネスト
+        {
+          "ParentPattern": "$(FileName).cs",
+          "ChildPattern": "I$(FileName).cs",
+          "NestingType": "FilePrefixToFileName" // プレフィックスの違いでネスト
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,47 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.11" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.11" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EditorConfigFiles Remove="C:\nugetRepo\PleasanterBridge\PleasanterBridge\.editorconfig" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="C:\nugetRepo\PleasanterBridge\PleasanterBridge\.editorconfig" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="src/PleasanterAPIBridge/Configuration/IPleasanterSettings.cs">
+        <DependentUpon>src/PleasanterAPIBridge/Configuration/PleasanterSettings.cs</DependentUpon>
+    </Compile>
+    <Compile Include="src/PleasanterAPIBridge/IPleasanterAPIBridge.cs">
+        <DependentUpon>src/PleasanterAPIBridge/PleasanterAPIBridge.cs</DependentUpon>
+    </Compile>
+    <Compile Include="src/PleasanterRepository/Configuration/IConnectionSettings.cs">
+        <DependentUpon>src/PleasanterRepository/Configuration/ConnectionSettings.cs</DependentUpon>
+    </Compile>
+    <Compile Include="src/PleasanterRepository/Service/Implementation/IGetReferenceTypeProcess.cs">
+        <DependentUpon>src/PleasanterRepository/Service/Implementation/GetReferenceTypeProcess.cs</DependentUpon>
+    </Compile>
+    <Compile Include="src/PleasanterRepository/Service/Implementation/IGetResultsProcess.cs">
+        <DependentUpon>src/PleasanterRepository/Service/Implementation/GetResultsProcess.cs</DependentUpon>
+    </Compile>
+    <Compile Include="src/PleasanterRepository/Service/IPleasanterRepository.cs">
+        <DependentUpon>src/PleasanterRepository/Service/PleasanterRepository.cs</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="src\PleasanterAPIBridge\Process\" />
+  </ItemGroup>
+
+</Project>
