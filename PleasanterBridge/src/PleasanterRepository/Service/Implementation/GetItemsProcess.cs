@@ -4,14 +4,14 @@ using PleasanterAPIBridge.src.PleasanterRepository.Process.DBProcess;
 
 namespace PleasanterAPIBridge.src.PleasanterRepository.Service.Implementation
 {
-    public class GetReferenceTypeProcess : ItemsProcess, IGetReferenceTypeProcess
+    public class GetItemsProcess : ItemsProcess, IGetItemsProcess
     {
-        public GetReferenceTypeProcess(IConnectionSettings settings)
+        public GetItemsProcess(IConnectionSettings settings)
             : base(settings)
         {
         }
 
-        public string Execute(string referenceId)
+        public string GetReferenceType(string referenceId)
         {
             ItemsEntity itemsEntity = Get(referenceId);
 

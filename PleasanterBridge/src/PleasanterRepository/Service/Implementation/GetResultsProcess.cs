@@ -1,6 +1,7 @@
 using PleasanterAPIBridge.src.PleasanterRepository.Configuration;
 using PleasanterAPIBridge.src.PleasanterRepository.Entity;
 using PleasanterAPIBridge.src.PleasanterRepository.Process.DBProcess;
+using PleasanterBridge.src.PleasanterRepository.Process;
 
 namespace PleasanterAPIBridge.src.PleasanterRepository.Service.Implementation
 {
@@ -23,13 +24,14 @@ namespace PleasanterAPIBridge.src.PleasanterRepository.Service.Implementation
             // データのない行を削る
             // 最終的にはSitesと突き合せてユーザ設定のあるColumnだけ残す
 
-            return resultsEntity.GetType()
-                .GetProperties()
-                .Where(prop => prop.GetValue(resultsEntity) != null)
-                .ToDictionary(
-                    prop => prop.Name,
-                    prop => prop.GetValue(resultsEntity)!
-                );
+            return EntityToDictionaryProcess.Convert(resultsEntity);
+        }
+
+        public List<Dictionary<string, object>> Execute(Dictionary<string, object> keyValue)
+        {
+            List<ResultsEntity> resultsEntities = base.GetFromDictionaryt(keyValue);
+
+            return EntityToDictionaryProcess.Convert(resultsEntities);
         }
     }
 }
