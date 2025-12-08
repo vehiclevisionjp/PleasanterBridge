@@ -17,39 +17,11 @@
 
   <ItemGroup>
     <None Include="C:\nugetRepo\PleasanterBridge\PleasanterBridge\.editorconfig" />
+    <None Include="src\Utilities\PleasanterReferenceTypeExtensions.cs" />
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Include="src/Configuration/IConnectionSettings.cs">
-      <DependentUpon>src/Configuration/ConnectionSettings.cs</DependentUpon>
-    </Compile>
-    <Compile Include="src/PleasanterAPIBridge/Configuration/IPleasanterSettings.cs">
-      <DependentUpon>src/PleasanterAPIBridge/Configuration/PleasanterSettings.cs</DependentUpon>
-    </Compile>
-    <Compile Include="src/PleasanterAPIBridge/IPleasanterAPIBridge.cs">
-      <DependentUpon>src/PleasanterAPIBridge/PleasanterAPIBridge.cs</DependentUpon>
-    </Compile>
-    <Compile Include="src/PleasanterRepository/Service/Implementation/IGetItemsProcess.cs">
-      <DependentUpon>GetItemsProcess.cs</DependentUpon>
-    </Compile>
-    <Compile Include="src/PleasanterRepository/Service/Implementation/IGetResultsProcess.cs">
-      <DependentUpon>src/PleasanterRepository/Service/Implementation/GetResultsProcess.cs</DependentUpon>
-    </Compile>
-    <Compile Include="src/PleasanterRepository/Service/IPleasanterRepository.cs">
-      <DependentUpon>src/PleasanterRepository/Service/PleasanterRepository.cs</DependentUpon>
-    </Compile>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Compile Update="src\Configuration\IConnectionSettings.cs">
-      <DependentUpon>src/PleasanterRepository/Configuration/ConnectionSettings.cs</DependentUpon>
-    </Compile>
-    <Compile Update="src\PleasanterRepository\Service\Implementation\IGetSitesProcess.cs">
-      <DependentUpon>GetSitesProcess.cs</DependentUpon>
-    </Compile>
-    <Compile Update="src\PleasanterRepository\Service\Implementation\IGetReferenceProcess.cs">
-      <DependentUpon>GetReferenceProcess.cs</DependentUpon>
-    </Compile>
+    <Folder Include="src\DataRepository\Exception\" />
   </ItemGroup>
 
 </Project>
