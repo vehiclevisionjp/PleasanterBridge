@@ -1,4 +1,6 @@
-namespace PleasanterAPIBridge.src.PleasanterRepository.Configuration
+using PleasanterAPIBridge.src.PleasanterRepository.Configuration;
+
+namespace PleasanterBridge.src.Configuration
 {
     public class ConnectionSettings : IConnectionSettings
     {
