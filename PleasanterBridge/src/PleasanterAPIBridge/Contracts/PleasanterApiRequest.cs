@@ -1,6 +1,6 @@
-namespace PleasanterAPIBridge.src.PleasanterAPIBridge.Request
+namespace PleasanterAPIBridge.src.PleasanterAPIBridge.Contracts
 {
-    public class PleasanterApiRequest: ApiRequest
+    internal class PleasanterApiRequest
     {
         public Dictionary<string, string> ClassHash { get; set; } = new();
         public Dictionary<string, decimal> NumHash { get; set; } = new();
@@ -8,7 +8,5 @@ namespace PleasanterAPIBridge.src.PleasanterAPIBridge.Request
         public Dictionary<string, string> DescriptionHash { get; set; } = new();
         public Dictionary<string, bool> CheckHash { get; set; } = new();
         public Dictionary<string, string> AttachmentsHash { get; set; } = new();
-
-        public PleasanterApiRequest(string apiKey) : base(apiKey){}
     }
 }

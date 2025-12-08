@@ -1,15 +1,14 @@
-namespace PleasanterAPIBridge.src.PleasanterAPIBridge.Request
+namespace PleasanterAPIBridge.src.PleasanterAPIBridge.Contracts
 {
-    public class ApiRequest
+    internal class ApiRequest: ApiRequestBase
     {
-        public string ApiVersion { get; set; } = "1.1";
-        public string ApiKey { get; set; }
-
+        public readonly PleasanterApiRequest PleasanterApiRequest;
         public ApiRequest(
-            string apiKey
-        )
+            string apiKey,
+            PleasanterApiRequest pleasanterApiRequest
+        ): base(apiKey)
         {
-            ApiKey = apiKey;
+            PleasanterApiRequest = pleasanterApiRequest;
         }
     }
 }

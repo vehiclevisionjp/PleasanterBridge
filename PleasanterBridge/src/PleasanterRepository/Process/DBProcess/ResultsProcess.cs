@@ -47,5 +47,11 @@ namespace PleasanterAPIBridge.src.PleasanterRepository.Process.DBProcess
                 .Where(y => resultIdList.Contains(Convert.ToInt32(y.ResultId)))
                 .ToList();
         }
+
+        protected List<ResultsEntity> GetFromDictionaryt(Dictionary<string, object> keyValue)
+        {
+            var query = WhereByDictionaryProcess.Execute(Results, keyValue);
+            return query.ToList();
+        }
     }
 }
