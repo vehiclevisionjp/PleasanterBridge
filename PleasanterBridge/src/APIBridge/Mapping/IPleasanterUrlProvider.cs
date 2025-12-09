@@ -1,6 +1,6 @@
 namespace PleasanterBridge.src.APIBridge.Mapping
 {
-    interface IPleasanterUrlProvider
+    public interface IPleasanterUrlProvider
     {
         public string GetItemCreateUrl(string siteId);
 

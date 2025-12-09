@@ -1,3 +1,4 @@
+using PleasanterBridge.src.APIBridge.Configuration;
 using PleasanterBridge.src.Configuration;
 using PleasanterBridge.src.DataRepository.DbProcess.Implementaion;
 using PleasanterBridge.src.DataRepository.Service.Implementation;
@@ -8,7 +9,7 @@ namespace PleasanterBridge.src.DataRepository.Service
     public class PleasanterRepository : IPleasanterRepository
     {
         private readonly IConnectionSettings _settings;
-        private readonly IGetReferenceProcess GetReferenceProcess;
+        private readonly IGetReferenceProcess _getReferenceProcess;
         private readonly IDbProcessFactory _dbProcessFactory;
 
         public PleasanterRepository(
@@ -24,7 +25,7 @@ namespace PleasanterBridge.src.DataRepository.Service
                 userId,
                 password
             );
-            GetReferenceProcess = new GetReferenceProcess(_settings); 
+            _getReferenceProcess = new GetReferenceProcess(_settings); 
             _dbProcessFactory = new DbProcessFactory(_settings);
         }
 
@@ -36,6 +37,18 @@ namespace PleasanterBridge.src.DataRepository.Service
         )
         {
         }
+
+        public PleasanterRepository(
+            HttpClient httpClient,
+            IPleasanterSettings settings,
+            IGetReferenceProcess referenceProcess
+        )
+        {
+            _settings = settings;
+            _getReferenceProcess = referenceProcess;
+            _dbProcessFactory = new DbProcessFactory(_settings);
+        }
+
 
         public List<Dictionary<string, object>> Select(string referenceId)
         {
@@ -54,7 +67,7 @@ namespace PleasanterBridge.src.DataRepository.Service
 
         private List<Dictionary<string, object>> SelectByReferenceType(string id, bool isReferenceId, Dictionary<string, object>? keyValue = null)
         {
-            string referenceType = GetReferenceProcess.Execute(id, isReferenceId);
+            string referenceType = _getReferenceProcess.Execute(id, isReferenceId);
             PleasanterReferenceType pleasanterReferenceType = PleasanterReferenceTypeExtensions.ParseReferenceType(referenceType);
             IDbExecutionProcess process = _dbProcessFactory.Create(pleasanterReferenceType);
 

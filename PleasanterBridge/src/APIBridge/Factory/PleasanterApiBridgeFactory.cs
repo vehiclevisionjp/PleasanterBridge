@@ -1,4 +1,3 @@
-using PleasanterBridge.src.APIBridge;
 using PleasanterBridge.src.APIBridge.Configuration;
 using PleasanterBridge.src.APIBridge.Factory.Share;
 namespace PleasanterBridge.src.APIBridge.Factory
@@ -7,7 +6,7 @@ namespace PleasanterBridge.src.APIBridge.Factory
     {
         protected override void ApplySpecificSettings(IPleasanterSettings settings, HttpClient client)
         {
-            if (string.IsNullOrWhiteSpace(settings.BaseUrl))
+            if (string.IsNullOrWhiteSpace(settings.Url))
             {
                 throw new ArgumentException("Pleasanter BaseUrl は必須です。");
             }
@@ -23,9 +22,12 @@ namespace PleasanterBridge.src.APIBridge.Factory
 
             return new PleasanterAPIBridge(
                 httpClient: client,
-                pleasanterUrlBase: settings.BaseUrl,
+                pleasanterUrl: settings.Url,
                 apiKey: settings.ApiyKey,
-                settings: settings
+                server: settings.Server,
+                database: settings.Database,
+                userId: settings.UserId,
+                password: settings.Password
             );
         }
     }
