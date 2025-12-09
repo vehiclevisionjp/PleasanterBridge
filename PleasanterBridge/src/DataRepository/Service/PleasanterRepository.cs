@@ -32,7 +32,7 @@ namespace PleasanterBridge.src.DataRepository.Service
             return SelectByReferenceType(referenceId, true);
         }
 
-        public List<Dictionary<string, object>> Select(string siteId, Dictionary<string, object>? keyValue = null)
+        public List<Dictionary<string, object>> Select(string siteId, Dictionary<string, object>? keyValue)
         {
             if (keyValue == null)
             {
