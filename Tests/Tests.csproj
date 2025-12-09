@@ -21,7 +21,4 @@
   <ItemGroup>
     <ProjectReference Include="..\PleasanterBridge\PleasanterBridge.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="APIBridge\Union\" />
-  </ItemGroup>
 </Project>
