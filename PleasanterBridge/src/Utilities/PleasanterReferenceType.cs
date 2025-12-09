@@ -1,6 +1,6 @@
 namespace PleasanterBridge.src.Utilities
 {
-    internal enum PleasanterReferenceType
+    public enum PleasanterReferenceType
     {
         Sites,
         Results,

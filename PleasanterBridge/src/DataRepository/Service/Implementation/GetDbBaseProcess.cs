@@ -5,7 +5,7 @@ using PleasanterBridge.src.Utilities;
 
 namespace PleasanterBridge.src.DataRepository.Service.Implementation
 {
-    internal class GetDbBaseProcess<TEntity> : DbBaseProcess<TEntity>
+    internal class GetDbBaseProcess<TEntity> : DbBaseProcess<TEntity>, IDbExecutionProcess
         where TEntity : class
     {
         private readonly PleasanterIdPropertyName _idPropertyName;

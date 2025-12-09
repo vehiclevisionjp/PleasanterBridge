@@ -1,19 +1,37 @@
 using Microsoft.EntityFrameworkCore;
 using PleasanterBridge.src.Configuration;
+using System.Linq.Expressions;
 using System.Reflection;
-using PleasanterBridge.src.DataRepository.Data;
 
 namespace PleasanterBridge.src.DataRepository.DbProcess.Implementaion
 {
-    internal abstract class DbBaseProcess<TEntity> : DbContext, IDBContext
+    internal abstract class DbBaseProcess<TEntity> : DbSetTablesProcess
         where TEntity : class
     {
         protected readonly IConnectionSettings Settings;
         protected DbSet<TEntity> Entities { get; set; }
 
-        protected DbBaseProcess(IConnectionSettings settings)
+        protected DbBaseProcess(IConnectionSettings settings) : base(settings)
         {
             Settings = settings;
+
+            Type? entityType = typeof(TEntity);
+
+            string dbSetPropertyName = entityType.Name;
+            if (dbSetPropertyName.EndsWith("Entity"))
+            {
+                dbSetPropertyName = dbSetPropertyName.Substring(0, dbSetPropertyName.Length - "Entity".Length);
+            }
+
+            PropertyInfo? dbSetProperty = typeof(DbSetTablesProcess)
+                .GetProperty(dbSetPropertyName, BindingFlags.Public | BindingFlags.Instance);
+
+            if (dbSetProperty == null)
+            {
+                throw new Exception($"DbSet property for {entityType.Name} not found in DbSetTablesProcess.");
+            }
+
+            Entities = (DbSet<TEntity>)dbSetProperty.GetValue(this)!;
         }
 
         protected List<TEntity> GetAll()
@@ -25,38 +43,53 @@ namespace PleasanterBridge.src.DataRepository.DbProcess.Implementaion
         {
             PropertyInfo prop = typeof(TEntity).GetProperty("SiteId") 
                 ?? throw new Exception("SiteId property not found");
+
+            Expression<Func<TEntity, bool>> predicate =
+                Utilities.ExpressionBuilder.BuildEqualsExpression<TEntity, string>("SiteId", siteId);
+
             return Entities
-                .Where(x => Convert.ToString(prop.GetValue(x)) == siteId)
+                .Where(predicate)
                 .ToList();
         }
 
         protected List<TEntity> GetFromSiteId(string siteId, List<string> idList, string idPropertyName)
         {
-            PropertyInfo siteIdProp = typeof(TEntity).GetProperty("SiteId") ?? 
-                throw new Exception("SiteId property not found");
-            PropertyInfo idProp = typeof(TEntity).GetProperty(idPropertyName) ??
-                throw new Exception($"{idPropertyName} property not found");
+            Expression<Func<TEntity, bool>> siteIdPredicate =
+                Utilities.ExpressionBuilder.BuildEqualsExpression<TEntity, string>("SiteId", siteId);
+
+            Expression<Func<TEntity, bool>> idListPredicate =
+                Utilities.ExpressionBuilder.BuildContainsExpression<TEntity>(idPropertyName, idList);
+
+            Expression combinedBody = Expression.AndAlso(siteIdPredicate.Body, idListPredicate.Body);
+
+            Expression<Func<TEntity, bool>> finalLambda = Expression.Lambda<Func<TEntity, bool>>(
+                combinedBody,
+                siteIdPredicate.Parameters.Single()
+            );
+
             return Entities
-                .Where(x => Convert.ToString(siteIdProp.GetValue(x)) == siteId)
-                .Where(y => idList.Contains(Convert.ToString(idProp.GetValue(y))!))
+                .Where(finalLambda)
                 .ToList();
         }
 
         protected TEntity GetSingleRecord(string referenceId, string idPropertyName)
         {
-            PropertyInfo idProp = typeof(TEntity).GetProperty(idPropertyName) ?? 
-                throw new Exception($"{idPropertyName} property not found");
+            Expression<Func<TEntity, bool>> lambda =
+                Utilities.ExpressionBuilder.BuildEqualsExpression<TEntity, int>(idPropertyName, Convert.ToInt32(referenceId));
+
             return Entities
-                .Where(x => Convert.ToInt32(idProp.GetValue(x)) == Convert.ToInt32(referenceId))
-                .FirstOrDefault() ?? throw new Exception($"invalid {idPropertyName}");
+                .Where(lambda)
+                .FirstOrDefault()
+                ?? throw new Exception($"invalid {idPropertyName}");
         }
 
         protected List<TEntity> GetFromIdList(List<string> idList, string idPropertyName)
         {
-            PropertyInfo idProp = typeof(TEntity).GetProperty(idPropertyName) ?? 
-                throw new Exception($"{idPropertyName} property not found");
+            Expression<Func<TEntity, bool>> idListPredicate =
+                Utilities.ExpressionBuilder.BuildContainsExpression<TEntity>(idPropertyName, idList);
+
             return Entities
-                .Where(y => idList.Contains(Convert.ToString(idProp.GetValue(y))!))
+                .Where(idListPredicate)
                 .ToList();
         }
 

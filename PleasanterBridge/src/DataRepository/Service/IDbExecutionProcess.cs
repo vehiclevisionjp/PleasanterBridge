@@ -1,4 +1,6 @@
-internal interface IDbExecutionProcess
+namespace PleasanterBridge.src.DataRepository.Service;
+
+    public interface IDbExecutionProcess
 {
     List<Dictionary<string, object>> Execute(
         string id,
