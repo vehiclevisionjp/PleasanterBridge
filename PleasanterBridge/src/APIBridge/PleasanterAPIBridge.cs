@@ -1,3 +1,4 @@
+using PleasanterBridge.src.APIBridge.Configuration;
 using PleasanterBridge.src.APIBridge.Contracts;
 using PleasanterBridge.src.APIBridge.Exception;
 using PleasanterBridge.src.APIBridge.Mapping;
@@ -13,24 +14,57 @@ namespace PleasanterBridge.src.APIBridge
     {
         private readonly HttpClient _httpClient;
         private readonly string _apiKey;
+        private readonly IPleasanterSettings _settings;
         private readonly IPleasanterUrlProvider _pleasanterUrlProvider;
         private readonly IPleasanterRepository _pleasanterRepository;
         private readonly IGetReferenceProcess _getReferenceProcess;
-        private readonly IPleasanterResponseHandler _pleasanterResponseHandler;
+        private readonly IPleasanterResponseHandler _pleasanterResponseHandler; 
 
-        public PleasanterAPIBridge(HttpClient httpClient, string pleasanterUrlBase, string apiKey, IConnectionSettings settings)
+
+        public PleasanterAPIBridge(
+            HttpClient httpClient, 
+            string pleasanterUrl, 
+            string apiKey,
+            string server,
+            string database,
+            string userId,
+            string password
+        )
         {
-            if (string.IsNullOrEmpty(pleasanterUrlBase))
+            if (string.IsNullOrEmpty(pleasanterUrl))
             {
                 throw new ArgumentException("Base URL is required.");
             }
 
             _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
             _apiKey = apiKey;
-            _pleasanterUrlProvider = new PleasanterUrlProvider(pleasanterUrlBase);
-            _pleasanterRepository = new PleasanterRepository(settings);
-            _getReferenceProcess = new GetReferenceProcess(settings);
+            _settings = new PleasanterSettings(
+                apiKey,
+                pleasanterUrl,
+                server,
+                database,
+                userId,
+                password
+            );
+            _pleasanterUrlProvider = new PleasanterUrlProvider(pleasanterUrl);
+            _pleasanterRepository = new PleasanterRepository(_settings);
+            _getReferenceProcess = new GetReferenceProcess(_settings);
             _pleasanterResponseHandler = new PleasanterResponseHandler(httpClient);
+        }
+
+        public PleasanterAPIBridge(
+            HttpClient httpClient,
+            IPleasanterSettings settings
+        ) : this(
+            httpClient,
+            settings.ApiyKey,
+            settings.Url,
+            settings.Server,
+            settings.Database,
+            settings.UserId,
+            settings.Password
+        )
+        {
         }
 
         public async Task<PleasanterApiResponse> Insert(string siteId, Dictionary<string, object> dataRecord)
