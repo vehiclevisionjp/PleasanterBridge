@@ -9,7 +9,8 @@ namespace PleasanterBridge.src.Utilities
             typeof(string),
             typeof(bool),
             typeof(double),
-            typeof(decimal) 
+            typeof(decimal),
+            typeof(int)
         };
 
         public static void Validate(Dictionary<string, object> data)
