@@ -1,8 +1,8 @@
+using Microsoft.EntityFrameworkCore.Metadata;
 using PleasanterBridge.src.APIBridge.Configuration;
 using PleasanterBridge.src.APIBridge.Contracts;
 using PleasanterBridge.src.APIBridge.Exception;
 using PleasanterBridge.src.APIBridge.Mapping;
-using PleasanterBridge.src.Configuration;
 using PleasanterBridge.src.DataRepository.Service;
 using PleasanterBridge.src.DataRepository.Service.Implementation;
 using PleasanterBridge.src.Utilities;
@@ -13,7 +13,6 @@ namespace PleasanterBridge.src.APIBridge
     public class PleasanterAPIBridge : IPleasanterApiBridge
     {
         private readonly HttpClient _httpClient;
-        private readonly string _apiKey;
         private readonly IPleasanterSettings _settings;
         private readonly IPleasanterUrlProvider _pleasanterUrlProvider;
         private readonly IPleasanterRepository _pleasanterRepository;
@@ -37,7 +36,6 @@ namespace PleasanterBridge.src.APIBridge
             }
 
             _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
-            _apiKey = apiKey;
             _settings = new PleasanterSettings(
                 apiKey,
                 pleasanterUrl,
@@ -65,6 +63,23 @@ namespace PleasanterBridge.src.APIBridge
             settings.Password
         )
         {
+        }
+
+        public PleasanterAPIBridge(
+            HttpClient httpClient,
+            IPleasanterSettings settings,
+            IPleasanterUrlProvider urlProvider,
+            IPleasanterRepository repository,
+            IGetReferenceProcess referenceProcess,
+            IPleasanterResponseHandler responseHandler
+        )
+        {
+            _httpClient = httpClient;
+            _settings = settings;
+            _pleasanterUrlProvider = urlProvider;
+            _pleasanterRepository = repository;
+            _getReferenceProcess = referenceProcess;
+            _pleasanterResponseHandler = responseHandler;
         }
 
         public async Task<PleasanterApiResponse> Insert(string siteId, Dictionary<string, object> dataRecord)
@@ -190,7 +205,7 @@ namespace PleasanterBridge.src.APIBridge
         private Dictionary<string, object> SetRequest(Dictionary<string, object> dataSet)
         {
             Dictionary<string, object> converted = SetEntity(dataSet);
-            ApiRequest apiRequest = new(_apiKey, converted);
+            ApiRequest apiRequest = new(_settings.ApiyKey, converted);
 
             return RequestToDictionaryProcess.Convert(apiRequest);
         }
@@ -204,7 +219,7 @@ namespace PleasanterBridge.src.APIBridge
                 convertedList.Add(SetEntity(dataSet));
             });
 
-            BulkInsertRequest bulkInsertRequest = new(_apiKey, convertedList);
+            BulkInsertRequest bulkInsertRequest = new(_settings.ApiyKey, convertedList);
 
             return RequestToDictionaryProcess.Convert(bulkInsertRequest);
         }
@@ -218,14 +233,14 @@ namespace PleasanterBridge.src.APIBridge
                 convertedList.Add(SetEntity(dataSet));
             });
 
-            UpsertApiRequest upsertApiRequest = new(_apiKey, matchColumns, convertedList);
+            UpsertApiRequest upsertApiRequest = new(_settings.ApiyKey, matchColumns, convertedList);
 
             return RequestToDictionaryProcess.Convert(upsertApiRequest);
         }
 
         private Dictionary<string, object> SetDeleteRequest()
         {
-            ApiRequestBase apiRequestBase = new(_apiKey);
+            ApiRequestBase apiRequestBase = new(_settings.ApiyKey);
 
             return RequestToDictionaryProcess.Convert(apiRequestBase);
         }
