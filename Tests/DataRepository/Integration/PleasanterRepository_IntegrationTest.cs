@@ -55,6 +55,7 @@ public class PleasanterRepository_IntegrationTest
 
         Assert.True(result.Count >= 0);
     }
+
     [Fact]
     public void Select_ByReferenceId_UsingSettingsConstructor_ShouldReturnData()
     {
@@ -71,6 +72,29 @@ public class PleasanterRepository_IntegrationTest
         IPleasanterRepository repo = new PleasanterRepository(settings);
 
         List<Dictionary<string, object>> result = repo.Select(referenceId);
+
+        Assert.NotNull(result);
+        Assert.True(result.Count >= 0);
+
+        Console.WriteLine($"Select_ByReferenceId_UsingSettingsConstructor_ShouldReturnData: Count={result.Count}");
+    }
+
+    [Fact]
+    public void Select_BySiteId_UsingSettingsConstructor_ShouldReturnData()
+    {
+        // Arrange
+        string referenceId = "54";
+
+        IConnectionSettings settings = new ConnectionSettings(
+            Server,
+            Database,
+            UserId,
+            Password
+        );
+
+        IPleasanterRepository repo = new PleasanterRepository(settings);
+
+        List<Dictionary<string, object>> result = repo.Select(referenceId, null);
 
         Assert.NotNull(result);
         Assert.True(result.Count >= 0);
