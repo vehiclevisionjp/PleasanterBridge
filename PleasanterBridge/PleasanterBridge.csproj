@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net9.0</TargetFramework>
+    <InternalsVisibleTo>PleasanterBridge.Tests</InternalsVisibleTo>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
@@ -22,6 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="src\APIBridge\Test\" />
     <Folder Include="src\DataRepository\Exception\" />
   </ItemGroup>
 

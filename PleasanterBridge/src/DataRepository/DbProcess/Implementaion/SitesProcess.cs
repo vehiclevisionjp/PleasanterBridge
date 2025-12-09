@@ -5,12 +5,12 @@ using PleasanterBridge.src.DataRepository.Entity;
 
 namespace PleasanterBridge.src.DataRepository.DbProcess.Implementaion
 {
-    public class SitesProcess : DbContext, IDBContext
+    public class SitesProcess : DBContext
     {
         protected readonly IConnectionSettings Settings;
         protected DbSet<SitesEntity> Sites { get; set; }
 
-        protected SitesProcess(IConnectionSettings settings)
+        protected SitesProcess(IConnectionSettings settings): base(settings)
         {
             Settings = settings;
         }

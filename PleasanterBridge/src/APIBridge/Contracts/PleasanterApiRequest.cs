@@ -22,7 +22,7 @@ namespace PleasanterBridge.src.APIBridge.Contracts
         public Dictionary<string, bool> CheckHash { get; set; } = new();
         public Dictionary<string, string> AttachmentsHash { get; set; } = new();
 
-        PleasanterApiRequest(
+        public PleasanterApiRequest(
             string? title,
             string? body,
             string? startTime,

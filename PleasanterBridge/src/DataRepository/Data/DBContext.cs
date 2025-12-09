@@ -3,27 +3,26 @@ using PleasanterBridge.src.Configuration;
 
 namespace PleasanterBridge.src.DataRepository.Data
 {
-    public class DBContext : DbContext, IDBContext
+    public class DBContext : DbContext
     {
-        private readonly string connectionString;
-        private readonly IConnectionSettings _settings;
+        private readonly string ConnectionString;
 
-        public DBContext(IConnectionSettings settings)
+        public DBContext(IConnectionSettings settings): base()
         {
-            connectionString = @"Integrated Security=False" +
+            ConnectionString = 
+                @"Integrated Security=False" +
                 ";TrustServerCertificate=True" +
                 ";Server=" + settings.Server +
                 ";Database=" + settings.Database +
                 ";User Id=" + settings.UserId +
                 ";Password=" + settings.Password +
                 ";";
-            _settings = settings;
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer(connectionString);
             optionsBuilder.EnableSensitiveDataLogging();
+            optionsBuilder.UseSqlServer(ConnectionString);
         }
     }
 }

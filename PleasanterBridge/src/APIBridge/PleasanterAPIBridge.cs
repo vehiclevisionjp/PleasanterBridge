@@ -255,7 +255,6 @@ namespace PleasanterBridge.src.APIBridge
 
             PleasanterApiRequest pleasanterApiRequest = (PleasanterApiRequest)Activator.CreateInstance(
                 typeof(PleasanterApiRequest),
-                true,
                 title, body, startTime, completionTime, workValue, progressRate
             )!;
 
