@@ -1,4 +1,3 @@
-using Microsoft.EntityFrameworkCore.Metadata;
 using PleasanterBridge.src.APIBridge.Configuration;
 using PleasanterBridge.src.APIBridge.Contracts;
 using PleasanterBridge.src.APIBridge.Exception;
