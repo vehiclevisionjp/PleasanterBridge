@@ -82,8 +82,7 @@ public class PleasanterRepository_IntegrationTest
     [Fact]
     public void Select_BySiteId_UsingSettingsConstructor_ShouldReturnData()
     {
-        // Arrange
-        string referenceId = "54";
+        string siteId = "54";
 
         IConnectionSettings settings = new ConnectionSettings(
             Server,
@@ -94,7 +93,34 @@ public class PleasanterRepository_IntegrationTest
 
         IPleasanterRepository repo = new PleasanterRepository(settings);
 
-        List<Dictionary<string, object>> result = repo.Select(referenceId, null);
+        List<Dictionary<string, object>> result = repo.Select(siteId, null);
+
+        Assert.NotNull(result);
+        Assert.True(result.Count >= 0);
+
+        Console.WriteLine($"Select_ByReferenceId_UsingSettingsConstructor_ShouldReturnData: Count={result.Count}");
+    }
+
+    [Fact]
+    public void Select_ByKeyValue_UsingSettingsConstructor_ShouldReturnData()
+    {
+        string siteId = "58";
+        Dictionary<string, object> keyValues = new Dictionary<string, object>
+        {
+            { "Status", 100 },
+            { "ClassA", "004" }
+        };
+
+        IConnectionSettings settings = new ConnectionSettings(
+            Server,
+            Database,
+            UserId,
+            Password
+        );
+
+        IPleasanterRepository repo = new PleasanterRepository(settings);
+
+        List<Dictionary<string, object>> result = repo.Select(siteId, keyValues);
 
         Assert.NotNull(result);
         Assert.True(result.Count >= 0);
