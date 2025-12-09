@@ -23,7 +23,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="src\APIBridge\Test\" />
     <Folder Include="src\DataRepository\Exception\" />
   </ItemGroup>
 
