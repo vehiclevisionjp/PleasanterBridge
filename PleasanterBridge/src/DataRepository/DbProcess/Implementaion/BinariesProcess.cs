@@ -1,14 +1,15 @@
 using Microsoft.EntityFrameworkCore;
+using PleasanterBridge.src.Configuration;
 using PleasanterBridge.src.DataRepository.Data;
 using PleasanterBridge.src.DataRepository.Entity;
 
 namespace PleasanterBridge.src.DataRepository.DbProcess.Implementaion
 {
-    public class BinariesProcess : DbContext, IDBContext
+    public class BinariesProcess : DBContext
     {
         protected DbSet<BinariesEntity> Binaries { get; set; }
 
-        protected BinariesProcess() { }
+        protected BinariesProcess(IConnectionSettings settings) : base(settings) { }
 
         protected List<BinariesEntity> Get()
         {

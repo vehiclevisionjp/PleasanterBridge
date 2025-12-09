@@ -1,6 +1,4 @@
-using PleasanterBridge.src.APIBridge.Configuration;
 using PleasanterBridge.src.Configuration;
-using PleasanterBridge.src.DataRepository.DbProcess.Implementaion;
 using PleasanterBridge.src.DataRepository.Service.Implementation;
 using PleasanterBridge.src.Utilities;
 
@@ -8,25 +6,11 @@ namespace PleasanterBridge.src.DataRepository.Service
 {
     public class PleasanterRepository : IPleasanterRepository
     {
-        private readonly IConnectionSettings _settings;
-        private readonly IGetReferenceProcess _getReferenceProcess;
-        private readonly IDbProcessFactory _dbProcessFactory;
+        private readonly IDbProcessProvider _dbProcessProvider;
 
-        public PleasanterRepository(
-            string server,
-            string database,
-            string userId,
-            string password
-        )
+        public PleasanterRepository(string server, string database, string userId, string password)
+            : this(new DbProcessProvider(new ConnectionSettings(server, database, userId, password)))
         {
-            _settings = new ConnectionSettings(
-                server,
-                database,
-                userId,
-                password
-            );
-            _getReferenceProcess = new GetReferenceProcess(_settings); 
-            _dbProcessFactory = new DbProcessFactory(_settings);
         }
 
         public PleasanterRepository(IConnectionSettings settings): this(
@@ -38,17 +22,10 @@ namespace PleasanterBridge.src.DataRepository.Service
         {
         }
 
-        public PleasanterRepository(
-            HttpClient httpClient,
-            IPleasanterSettings settings,
-            IGetReferenceProcess referenceProcess
-        )
+        public PleasanterRepository(IDbProcessProvider dbProcessProvider)
         {
-            _settings = settings;
-            _getReferenceProcess = referenceProcess;
-            _dbProcessFactory = new DbProcessFactory(_settings);
+            _dbProcessProvider = dbProcessProvider;
         }
-
 
         public List<Dictionary<string, object>> Select(string referenceId)
         {
@@ -59,7 +36,7 @@ namespace PleasanterBridge.src.DataRepository.Service
         {
             if (keyValue == null)
             {
-                IGetSitesProcess getSitesProcess = new GetSitesProcess(_settings);
+                IGetSitesProcess getSitesProcess = _dbProcessProvider.GetSitesProcess();
                 return getSitesProcess.GetAll(siteId);
             }
             return SelectByReferenceType(siteId, false, keyValue);
@@ -67,9 +44,12 @@ namespace PleasanterBridge.src.DataRepository.Service
 
         private List<Dictionary<string, object>> SelectByReferenceType(string id, bool isReferenceId, Dictionary<string, object>? keyValue = null)
         {
-            string referenceType = _getReferenceProcess.Execute(id, isReferenceId);
+            IGetReferenceProcess referenceProcess = _dbProcessProvider.GetReferenceProcess();
+
+            string referenceType = referenceProcess.Execute(id, isReferenceId);
             PleasanterReferenceType pleasanterReferenceType = PleasanterReferenceTypeExtensions.ParseReferenceType(referenceType);
-            IDbExecutionProcess process = _dbProcessFactory.Create(pleasanterReferenceType);
+
+            IDbExecutionProcess process = _dbProcessProvider.GetDbProcessFactory().Create(pleasanterReferenceType);
 
             return process.Execute(id, isReferenceId, keyValue);
         }
