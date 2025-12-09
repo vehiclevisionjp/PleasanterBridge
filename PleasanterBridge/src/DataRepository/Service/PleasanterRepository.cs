@@ -11,11 +11,30 @@ namespace PleasanterBridge.src.DataRepository.Service
         private readonly IGetReferenceProcess GetReferenceProcess;
         private readonly IDbProcessFactory _dbProcessFactory;
 
-        public PleasanterRepository(IConnectionSettings settings)
+        public PleasanterRepository(
+            string server,
+            string database,
+            string userId,
+            string password
+        )
         {
-            _settings = settings;
+            _settings = new ConnectionSettings(
+                server,
+                database,
+                userId,
+                password
+            );
             GetReferenceProcess = new GetReferenceProcess(_settings); 
-            _dbProcessFactory = new DbProcessFactory(settings);
+            _dbProcessFactory = new DbProcessFactory(_settings);
+        }
+
+        public PleasanterRepository(IConnectionSettings settings): this(
+            settings.Server,
+            settings.Database,
+            settings.UserId,
+            settings.Password
+        )
+        {
         }
 
         public List<Dictionary<string, object>> Select(string referenceId)
