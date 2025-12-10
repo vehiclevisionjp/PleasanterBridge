@@ -2,22 +2,22 @@ namespace PleasanterBridge.src.APIBridge.Contracts
 {
     internal class PleasanterApiRequest
     {
-        public readonly string? Title;
+        public string? Title { get; }
 
-        public readonly string? Body;
+        public string? Body { get; }
 
         // issues用プロパティ
-        public readonly string? StartTime;
+        public string? StartTime { get; }
 
-        public readonly string? CompletionTime;
+        public string? CompletionTime { get; }
 
-        public readonly decimal? WorkValue;
+        public decimal? WorkValue { get; }
 
-        public readonly decimal? ProgressRate;
+        public decimal? ProgressRate { get; }
 
         public Dictionary<string, string> ClassHash { get; set; } = new();
         public Dictionary<string, decimal> NumHash { get; set; } = new();
-        public Dictionary<string, DateTime> DateHash { get; set; } = new();
+        public Dictionary<string, string> DateHash { get; set; } = new();
         public Dictionary<string, string> DescriptionHash { get; set; } = new();
         public Dictionary<string, bool> CheckHash { get; set; } = new();
         public Dictionary<string, string> AttachmentsHash { get; set; } = new();

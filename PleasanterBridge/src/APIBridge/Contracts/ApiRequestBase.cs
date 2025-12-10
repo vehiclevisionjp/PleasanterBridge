@@ -2,9 +2,9 @@ namespace PleasanterBridge.src.APIBridge.Contracts
 {
     internal class ApiRequestBase
     {
-        public readonly string ApiVersion = "1.1";
+        public string ApiVersion { get; } = "1.1";
 
-        public readonly string ApiKey;
+        public string ApiKey { get; }
 
         public ApiRequestBase(
             string apiKey
