@@ -1,7 +1,5 @@
 using PleasanterBridge.src.APIBridge.Contracts;
-using System;
 using System.Net;
-using System.Net.Http;
 
 namespace PleasanterBridge.src.APIBridge.Exception
 {
@@ -11,7 +9,6 @@ namespace PleasanterBridge.src.APIBridge.Exception
 
         public HttpStatusCode StatusCode => (HttpStatusCode)ResponseInfo.StatusCode;
 
-        // コンストラクタ
         public PleasanterApiException(
             string message,
             PleasanterApiResponse responseInfo,

@@ -8,7 +8,6 @@ namespace PleasanterBridge.src.APIBridge.Mapping
         }
         public static string ToHashPrefix(this PleasanterApiRequestKey key)
         {
-            // 例: ClassHash, NumHash などのPrefix用
             return key.ToString();
         }
     }
