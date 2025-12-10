@@ -1,5 +1,6 @@
 using PleasanterBridge.src.APIBridge.Configuration;
 using PleasanterBridge.src.APIBridge.Factory.Share;
+
 namespace PleasanterBridge.src.APIBridge.Factory
 {
     public class PleasanterApiBridgeFactory : ApiBridgeFactoryBase<IPleasanterSettings>, IApiBridgeFactory<IPleasanterApiBridge, IPleasanterSettings>
