@@ -2,9 +2,9 @@ namespace PleasanterBridge.src.APIBridge.Contracts
 {
     internal class UpsertApiRequest : ApiRequestBase
     {
-        public readonly List<string> Keys;
+        public List<string> Keys { get; }
 
-        public readonly List<Dictionary<string, object>> Data;
+        public List<Dictionary<string, object>> Data { get; }
 
         public UpsertApiRequest(
             string apiKey,

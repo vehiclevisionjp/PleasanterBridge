@@ -2,7 +2,7 @@ namespace PleasanterBridge.src.APIBridge.Contracts
 {
     internal class BulkInsertRequest : ApiRequestBase
     {
-        public readonly List<Dictionary<string, object>> Data;
+        public List<Dictionary<string, object>> Data { get; }
 
         public BulkInsertRequest(
             string apiKey,
