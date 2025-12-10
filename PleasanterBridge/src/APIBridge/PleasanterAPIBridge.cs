@@ -203,10 +203,10 @@ namespace PleasanterBridge.src.APIBridge
 
         private Dictionary<string, object> SetRequest(Dictionary<string, object> dataSet)
         {
+            Dictionary<string, object> apiRequest = RequestToDictionaryProcess.Convert(new ApiRequestBase(_settings.ApiyKey));
             Dictionary<string, object> converted = SetEntity(dataSet);
-            ApiRequest apiRequest = new(_settings.ApiyKey, converted);
 
-            return RequestToDictionaryProcess.Convert(apiRequest);
+            return DictionaryExtensions.Merge(apiRequest, converted);
         }
 
         private Dictionary<string, object> setBulkInsertRequest(List<Dictionary<string, object>> dataSets)
@@ -262,11 +262,16 @@ namespace PleasanterBridge.src.APIBridge
                 .Where(data => data.Key.Contains(PleasanterApiRequestKey.Class.ToHashPrefix()) && data.Value is string)
                 .ToDictionary(data => data.Key, data => data.Value as string ?? string.Empty);
             pleasanterApiRequest.NumHash = dataSet
-                .Where(data => data.Key.Contains(PleasanterApiRequestKey.Num.ToHashPrefix()) && data.Value is decimal)
-                .ToDictionary(data => data.Key, data => data.Value is decimal d ? d : 0m);
+                .Where(data =>
+                    data.Key.Contains(PleasanterApiRequestKey.Num.ToHashPrefix()) &&
+                    (data.Value is decimal || data.Value is int || data.Value is long || data.Value is float || data.Value is double))
+                .ToDictionary(
+                    data => data.Key,
+                    data => Convert.ToDecimal(data.Value)
+                );
             pleasanterApiRequest.DateHash = dataSet
-                .Where(data => data.Key.Contains(PleasanterApiRequestKey.Date.ToHashPrefix()) && data.Value is DateTime)
-                .ToDictionary(data => data.Key, data => data.Value is DateTime dt ? dt : default);
+                .Where(data => data.Key.Contains(PleasanterApiRequestKey.Date.ToHashPrefix()) && data.Value is string)
+                .ToDictionary(data => data.Key, data => data.Value as string ?? string.Empty);
             pleasanterApiRequest.DescriptionHash = dataSet
                 .Where(data => data.Key.Contains(PleasanterApiRequestKey.Description.ToHashPrefix()) && data.Value is string)
                 .ToDictionary(data => data.Key, data => data.Value as string ?? string.Empty);
