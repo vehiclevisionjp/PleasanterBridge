@@ -6,5 +6,6 @@ namespace PleasanterBridge.src.Configuration
         string Database { get; set; }
         string UserId { get; set; }
         string Password { get; set; }
+        DatabaseType DatabaseType { get; set; }
     }
 }
