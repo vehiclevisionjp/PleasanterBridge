@@ -1,5 +1,6 @@
 using PleasanterBridge.src.Configuration;
 using PleasanterBridge.src.DataRepository.Service;
+using PleasanterBridge.src.DataRepository.Service.Implementation;
 
 public class PleasanterRepository_IntegrationTest
 {
@@ -12,7 +13,7 @@ public class PleasanterRepository_IntegrationTest
     [Fact]
     public void Select_ByReferenceId_ConsoleOutput()
     {
-        string referenceId = "67"; // テスト用の固定値
+        int referenceId = 67; // テスト用の固定値
 
         IPleasanterRepository repo = new PleasanterRepository(Server, Database, UserId, Password);
 
@@ -32,7 +33,7 @@ public class PleasanterRepository_IntegrationTest
     [Fact]
     public void DiSetting_Select_ByReferenceId_ConsoleOutput()
     {
-        string referenceId = "67"; // テスト用の固定値
+        int referenceId = 67; // テスト用の固定値
 
         IConnectionSettings settings = new ConnectionSettings(
             Server,
@@ -60,7 +61,7 @@ public class PleasanterRepository_IntegrationTest
     public void Select_ByReferenceId_UsingSettingsConstructor_ShouldReturnData()
     {
         // Arrange
-        string referenceId = "67";
+        int referenceId = 67;
 
         IConnectionSettings settings = new ConnectionSettings(
             Server,
@@ -82,7 +83,7 @@ public class PleasanterRepository_IntegrationTest
     [Fact]
     public void Select_BySiteId_UsingSettingsConstructor_ShouldReturnData()
     {
-        string siteId = "54";
+        int siteId = 54;
 
         IConnectionSettings settings = new ConnectionSettings(
             Server,
@@ -104,7 +105,7 @@ public class PleasanterRepository_IntegrationTest
     [Fact]
     public void Select_ByKeyValue_UsingSettingsConstructor_ShouldReturnData()
     {
-        string siteId = "58";
+        int siteId = 58;
         Dictionary<string, object> keyValues = new Dictionary<string, object>
         {
             { "Status", 100 },
