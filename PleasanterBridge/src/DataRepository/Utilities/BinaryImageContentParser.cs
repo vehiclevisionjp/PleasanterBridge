@@ -74,26 +74,6 @@ namespace PleasanterBridge.src.DataRepository.Utilities
             return ReplaceBinaryGuidsWithDataAsync(segments);
         }
 
-        public static List<string> ExtractGuidsFromSegments(List<object> segments)
-        {
-            var guids = new List<string>();
-            var seenGuids = new HashSet<string>();
-
-            foreach (var segment in segments)
-            {
-                if (segment is string str && IsValidGuid(str))
-                {
-                    if (!seenGuids.Contains(str))
-                    {
-                        guids.Add(str);
-                        seenGuids.Add(str);
-                    }
-                }
-            }
-
-            return guids;
-        }
-
         private static bool IsValidGuid(string value)
         {
             return !string.IsNullOrEmpty(value) &&
