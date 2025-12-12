@@ -41,7 +41,7 @@ namespace PleasanterBridge.src.DataRepository.DbProcess.Implementaion
 
         protected List<TEntity> GetFromSiteId(string siteId)
         {
-            PropertyInfo prop = typeof(TEntity).GetProperty("SiteId") 
+            PropertyInfo prop = typeof(TEntity).GetProperty("SiteId")
                 ?? throw new Exception("SiteId property not found");
 
             Expression<Func<TEntity, bool>> predicate =
