@@ -5,9 +5,9 @@ namespace PleasanterBridge.src.DataRepository.Entity
     [PrimaryKey(nameof(ResultId))]
     internal class ResultsEntity
     {
-        public long? SiteId { get; set; }
+        public int SiteId { get; set; }
         public DateTime UpdatedTime { get; set; }
-        public long? ResultId { get; set; }
+        public int ResultId { get; set; }
         public int Ver { get; set; }
         public string? Title { get; set; }
         public string? Body { get; set; }
