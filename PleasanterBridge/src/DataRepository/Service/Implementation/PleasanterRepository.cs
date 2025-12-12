@@ -1,8 +1,9 @@
 using PleasanterBridge.src.Configuration;
-using PleasanterBridge.src.DataRepository.Service.Implementation;
+using PleasanterBridge.src.DataRepository.Entity;
+using PleasanterBridge.src.DataRepository.Utilities;
 using PleasanterBridge.src.Utilities;
 
-namespace PleasanterBridge.src.DataRepository.Service
+namespace PleasanterBridge.src.DataRepository.Service.Implementation
 {
     public class PleasanterRepository : IPleasanterRepository
     {
@@ -33,6 +34,11 @@ namespace PleasanterBridge.src.DataRepository.Service
             return SelectByReferenceType(referenceId, true);
         }
 
+        public List<TablesEntity> Select(string referenceId, bool isReturnEntity = false)
+        {
+            return DictionaryToTablesEntityConverter.Convert(SelectByReferenceType(referenceId, true));
+        }
+
         public List<Dictionary<string, object>> Select(string siteId, Dictionary<string, object>? keyValue)
         {
             if (keyValue == null)
@@ -41,6 +47,16 @@ namespace PleasanterBridge.src.DataRepository.Service
                 return getSitesProcess.GetAll(siteId);
             }
             return SelectByReferenceType(siteId, false, keyValue);
+        }
+
+        public List<TablesEntity> Select(string siteId, Dictionary<string, object>? keyValue, bool isReturnEntity = false)
+        {
+            if (keyValue == null)
+            {
+                IGetSitesProcess getSitesProcess = _dbProcessProvider.GetSitesProcess();
+                return DictionaryToTablesEntityConverter.Convert(getSitesProcess.GetAll(siteId));
+            }
+            return DictionaryToTablesEntityConverter.Convert(SelectByReferenceType(siteId, false, keyValue));
         }
 
         private List<Dictionary<string, object>> SelectByReferenceType(string id, bool isReferenceId, Dictionary<string, object>? keyValue = null)
