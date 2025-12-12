@@ -9,22 +9,22 @@ namespace PleasanterBridge.src.APIBridge.Mapping
             _pleasanterUrlBase = pleasanterUrlBase.TrimEnd('/');
         }
 
-        public string GetItemCreateUrl(string siteId)
+        public string GetItemCreateUrl(int siteId)
         {
             return $"{_pleasanterUrlBase}/api/items/{siteId}/create";
         }
 
-        public string GetBulkUpsertUrl(string siteId)
+        public string GetBulkUpsertUrl(int siteId)
         {
             return $"{_pleasanterUrlBase}/api/items/{siteId}/bulkupsert";
         }
 
-        public string GetItemUpdateUrl(string recordId)
+        public string GetItemUpdateUrl(int recordId)
         {
             return $"{_pleasanterUrlBase}/api/items/{recordId}/update";
         }
 
-        public string GetItemDeleteUrl(string recordId)
+        public string GetItemDeleteUrl(int recordId)
         {
             return $"{_pleasanterUrlBase}/api/items/{recordId}/delete";
         }

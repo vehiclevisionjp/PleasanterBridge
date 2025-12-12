@@ -20,7 +20,7 @@ namespace PleasanterBridge.src.DataRepository.DbProcess.Implementaion
             return Items.ToList();
         }
 
-        protected ItemsEntity Get(string referenceId)
+        protected ItemsEntity Get(int referenceId)
         {
             return Items
                 .Where(x => Convert.ToInt32(x.ReferenceId) == Convert.ToInt32(referenceId))
