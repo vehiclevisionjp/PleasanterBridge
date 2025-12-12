@@ -11,7 +11,7 @@ namespace PleasanterBridge.src.DataRepository.Service.Implementation
             _settings = settings;
         }
 
-        public string Execute(string id, bool isReferenceId)
+        public string Execute(int id, bool isReferenceId)
         {
             if(isReferenceId)
             {
