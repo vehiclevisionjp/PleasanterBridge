@@ -26,8 +26,8 @@ namespace PleasanterBridge.src.DataRepository.Data
                     ConfigureMySQL(optionsBuilder);
                     break;
 
-                case DatabaseType.Oracle:
-                    ConfigureOracle(optionsBuilder);
+                case DatabaseType.PostgreSQL:
+                    ConfigurePostgreSQL(optionsBuilder);
                     break;
 
                 default:
@@ -61,15 +61,16 @@ namespace PleasanterBridge.src.DataRepository.Data
             optionsBuilder.UseMySQL(connectionString);
         }
 
-        private void ConfigureOracle(DbContextOptionsBuilder optionsBuilder)
+        private void ConfigurePostgreSQL(DbContextOptionsBuilder optionsBuilder)
         {
             var connectionString = 
-                "Data Source=" + _settings.Server +
-                ";User Id=" + _settings.UserId +
+                "Host=" + _settings.Server +
+                ";Database=" + _settings.Database +
+                ";Username=" + _settings.UserId +
                 ";Password=" + _settings.Password +
                 ";";
 
-            optionsBuilder.UseOracle(connectionString);
+            optionsBuilder.UseNpgsql(connectionString);
         }
     }
 }
