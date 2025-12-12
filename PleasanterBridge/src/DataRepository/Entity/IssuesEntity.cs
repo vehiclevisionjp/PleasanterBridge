@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 namespace PleasanterBridge.src.DataRepository.Entity
 {
     [PrimaryKey(nameof(IssueId))]
-    public class IssuesEntity
+    internal class IssuesEntity
     {
         public long? SiteId { get; set; }
         public DateTime UpdatedTime { get; set; }
