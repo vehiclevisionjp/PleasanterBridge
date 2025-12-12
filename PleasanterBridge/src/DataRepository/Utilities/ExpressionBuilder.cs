@@ -2,17 +2,8 @@ using System.Linq.Expressions;
 
 namespace PleasanterBridge.src.DataRepository.Utilities
 {
-    // 💡 ユーザーはアクセスしないユーティリティのため、internal static で定義
     internal static class ExpressionBuilder
     {
-        /// <summary>
-        /// 指定されたプロパティ名と値に基づいて、DBで実行可能な等価比較 (x => x.Prop == value) のラムダ式を構築します。
-        /// </summary>
-        /// <typeparam name="TEntity">エンティティ型</typeparam>
-        /// <typeparam name="TProperty">プロパティの比較型 (例: int, string)</typeparam>
-        /// <param name="propertyName">比較対象のプロパティ名 (例: "SiteId")</param>
-        /// <param name="value">比較対象の値</param>
-        /// <returns>Where句に使用可能な Expression<Func<TEntity, bool>> </returns>
         public static Expression<Func<TEntity, bool>> BuildEqualsExpression<TEntity, TProperty>(
             string propertyName,
             TProperty value)
@@ -38,13 +29,6 @@ namespace PleasanterBridge.src.DataRepository.Utilities
             return Expression.Lambda<Func<TEntity, bool>>(comparison, entityParam);
         }
 
-        /// <summary>
-        /// 指定されたプロパティの値がリストに含まれるかを確認する Where 句 (SQLの IN 句に相当) を構築します。
-        /// </summary>
-        /// <typeparam name="TEntity">エンティティ型</typeparam>
-        /// <param name="propertyName">比較対象のプロパティ名 (例: "IssueId")</param>
-        /// <param name="idList">含むかどうかを判定する文字列のリスト</param>
-        /// <returns>Where句に使用可能な Expression<Func<TEntity, bool>> </returns>
         public static Expression<Func<TEntity, bool>> BuildContainsExpression<TEntity>(
             string propertyName,
             List<string> idList)
