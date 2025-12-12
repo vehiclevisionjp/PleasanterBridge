@@ -5,7 +5,7 @@ using PleasanterBridge.src.DataRepository.Utilities;
 
 namespace PleasanterBridge.src.DataRepository.Service.Implementation
 {
-    public class GetSitesProcess : SitesProcess, IGetSitesProcess
+    internal class GetSitesProcess : SitesProcess, IGetSitesProcess
     {
 
 

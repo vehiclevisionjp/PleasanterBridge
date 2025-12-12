@@ -5,7 +5,7 @@ using PleasanterBridge.src.DataRepository.Entity;
 
 namespace PleasanterBridge.src.DataRepository.DbProcess.Implementaion
 {
-    public class BinariesProcess : DBContext
+    internal class BinariesProcess : DBContext
     {
         protected DbSet<BinariesEntity> Binaries { get; set; }
 
