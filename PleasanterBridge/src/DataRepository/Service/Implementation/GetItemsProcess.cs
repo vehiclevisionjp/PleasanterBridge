@@ -4,7 +4,7 @@ using PleasanterBridge.src.DataRepository.Entity;
 
 namespace PleasanterBridge.src.DataRepository.Service.Implementation
 {
-    public class GetItemsProcess : ItemsProcess, IGetItemsProcess
+    internal class GetItemsProcess : ItemsProcess, IGetItemsProcess
     {
         public GetItemsProcess(IConnectionSettings settings)
             : base(settings)

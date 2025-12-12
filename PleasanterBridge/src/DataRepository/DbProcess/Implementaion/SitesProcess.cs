@@ -5,7 +5,7 @@ using PleasanterBridge.src.DataRepository.Entity;
 
 namespace PleasanterBridge.src.DataRepository.DbProcess.Implementaion
 {
-    public class SitesProcess : DBContext
+    internal class SitesProcess : DBContext
     {
         protected readonly IConnectionSettings Settings;
         protected DbSet<SitesEntity> Sites { get; set; }
