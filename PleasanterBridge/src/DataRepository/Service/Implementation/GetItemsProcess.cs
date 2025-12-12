@@ -11,7 +11,7 @@ namespace PleasanterBridge.src.DataRepository.Service.Implementation
         {
         }
 
-        public string GetReferenceType(string referenceId)
+        public string GetReferenceType(int referenceId)
         {
             ItemsEntity itemsEntity = Get(referenceId);
 

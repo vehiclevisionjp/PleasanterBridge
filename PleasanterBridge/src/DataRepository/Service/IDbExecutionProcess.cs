@@ -3,7 +3,7 @@ namespace PleasanterBridge.src.DataRepository.Service;
     public interface IDbExecutionProcess
 {
     List<Dictionary<string, object>> Execute(
-        string id,
+        int id,
         bool isReferenceId,
         Dictionary<string, object>? keyValue = null
     );

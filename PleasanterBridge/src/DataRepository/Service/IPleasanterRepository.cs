@@ -5,15 +5,16 @@ namespace PleasanterBridge.src.DataRepository.Service
 {
     public interface IPleasanterRepository
     {
-        public List<Dictionary<string, object>> Select(string id);
-        public List<TablesEntity> Select(string id, bool isReturnEntity = false);
+        public List<Dictionary<string, object>> Select(int id);
 
-        public List<Dictionary<string, object>> Select(List<string> referenceIds);
+        public List<TablesEntity> Select(int id, bool isReturnEntity = false);
 
-        public List<TablesEntity> Select(List<string> referenceIds, bool isReturnEntity = false);
+        public List<Dictionary<string, object>> Select(List<int> referenceIds);
 
-        public List<Dictionary<string, object>> Select(string siteId, Dictionary<string, object>? keyValue);
+        public List<TablesEntity> Select(List<int> referenceIds, bool isReturnEntity = false);
 
-        public List<TablesEntity> Select(string siteId, Dictionary<string, object>? keyValue, bool isReturnEntity = false);
+        public List<Dictionary<string, object>> Select(int siteId, Dictionary<string, object>? keyValue);
+
+        public List<TablesEntity> Select(int siteId, Dictionary<string, object>? keyValue, bool isReturnEntity = false);
     }
 }
