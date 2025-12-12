@@ -13,6 +13,8 @@ Pleasanter の REST API を利用してデータの作成・更新・削除を�
 - **Upsert / BulkUpsert**: レコードの挿入または更新
 - **Delete**: レコードの削除（ID指定 / 条件指定）
 
+**✨ 新機能**: 各メソッドは `Dictionary<string, object>` だけでなく、**クラスインスタンス**も受け取れるようになりました！
+
 ### 2. **データベースリポジトリ (`IPleasanterRepository`)**
 Pleasanter データベースへ直接 SQL アクセスし、データを読み取ります（Select専用）。
 
@@ -289,7 +291,7 @@ var settings = new PleasanterSettings(
     server: "localhost",
     database: "Implem.Pleasanter",
     userId: "postgres",
- password: "your-password",
+    password: "your-password",
     databaseType: DatabaseType.PostgreSQL
 );
 
@@ -333,7 +335,148 @@ public async Task InsertData()
 
 ### 📖 API ブリッジの使用例
 
-// ...existing code...
+#### **💡 Dictionary と クラスインスタンスの両方に対応**
+
+PleasanterBridge の API ブリッジメソッドは、従来の `Dictionary<string, object>` に加えて、**任意のクラスインスタンス**も受け取ることができます。
+
+**データクラスの定義例:**
+
+```csharp
+public class ResultRecord
+{
+  public string? Title { get; set; }
+    public string? Body { get; set; }
+    public string? ClassA { get; set; }
+    public string? ClassB { get; set; }
+    public int? NumA { get; set; }
+    public string? DateA { get; set; }
+    public bool? CheckA { get; set; }
+}
+
+public class TargetFilter
+{
+    public int? Status { get; set; }
+    public string? ClassA { get; set; }
+}
+
+public class UpdateData
+{
+    public string? Title { get; set; }
+    public string? Body { get; set; }
+}
+```
+
+#### **レコードの挿入**
+
+**Dictionary版:**
+```csharp
+var insertData = new Dictionary<string, object>
+{
+    { "Title", "新規タイトル" },
+  { "Body", "本文内容" },
+    { "ClassA", "分類A" },
+    { "NumA", 100 },
+    { "DateA", "2025/01/01" },
+    { "CheckA", true }
+};
+
+var response = await bridge.Insert("2826", insertData);
+```
+
+**クラスインスタンス版:**
+```csharp
+var insertData = new ResultRecord
+{
+    Title = "新規タイトル",
+    Body = "本文内容",
+    ClassA = "分類A",
+  NumA = 100,
+    DateA = "2025/01/01",
+    CheckA = true
+};
+
+var response = await bridge.Insert("2826", insertData);
+Console.WriteLine($"StatusCode: {response.StatusCode}, Id: {response.Id}");
+```
+
+#### **一括挿入**
+
+**クラスインスタンス版:**
+```csharp
+var dataList = new List<ResultRecord>
+{
+    new() { Title = "データ1", ClassA = "分類1", NumA = 1 },
+    new() { Title = "データ2", ClassA = "分類2", NumA = 2 }
+};
+
+var response = await bridge.BulkInsert("2826", dataList);
+```
+
+#### **レコードの更新（ID指定）**
+
+**クラスインスタンス版:**
+```csharp
+var updateData = new UpdateData
+{
+    Title = "更新後タイトル",
+ Body = "更新後本文"
+};
+
+var response = await bridge.Update("12345", updateData);
+```
+
+#### **レコードの更新（条件指定）**
+
+**クラスインスタンス版:**
+```csharp
+var targetColumns = new TargetFilter
+{
+    Status = 100,
+    ClassA = "分類A"
+};
+
+var updateData = new UpdateData
+{
+    Title = "一括更新タイトル"
+};
+
+var responses = await bridge.Update("2826", targetColumns, updateData);
+```
+
+#### **Upsert（挿入または更新）**
+
+**クラスインスタンス版:**
+```csharp
+var upsertData = new ResultRecord
+{
+    Title = "Upsertデータ",
+    ClassA = "分類A",
+    ClassB = "分類B",
+ NumA = 500
+};
+
+var matchColumns = new List<string> { "ClassA", "ClassB" };
+var response = await bridge.Upsert("2826", matchColumns, upsertData);
+```
+
+#### **レコードの削除（ID指定）**
+
+```csharp
+var response = await bridge.Delete("12345");
+```
+
+#### **レコードの削除（条件指定）**
+
+**クラスインスタンス版:**
+```csharp
+var targetColumns = new TargetFilter
+{
+    Status = 900,
+ ClassA = "削除対象"
+};
+
+var responses = await bridge.Delete("2826", targetColumns);
+```
 
 ---
 
@@ -448,8 +591,6 @@ public class MyService
 ---
 
 ### 📖 データベースリポジトリの使用例
-
-// ...existing code...
 
 ---
 
