@@ -13,6 +13,8 @@ Execute data creation, updates, and deletions using Pleasanter's REST API.
 - **Upsert / BulkUpsert**: Insert or update records
 - **Delete**: Delete records (by ID or conditions)
 
+**✨ New Feature**: All methods now accept not only `Dictionary<string, object>`, but also **class instances**!
+
 ### 2. **Database Repository (`IPleasanterRepository`)**
 Direct SQL access to the Pleasanter database for reading data (Select only).
 
@@ -215,7 +217,148 @@ public MyService(IPleasanterApiBridge bridge)
 
 ### 📖 API Bridge Usage Examples
 
-// ...existing code...
+#### **💡 Supports Both Dictionary and Class Instances**
+
+PleasanterBridge API Bridge methods can accept both traditional `Dictionary<string, object>` and **any class instances**.
+
+**Example Data Class Definitions:**
+
+```csharp
+public class ResultRecord
+{
+    public string? Title { get; set; }
+    public string? Body { get; set; }
+    public string? ClassA { get; set; }
+    public string? ClassB { get; set; }
+    public int? NumA { get; set; }
+    public string? DateA { get; set; }
+    public bool? CheckA { get; set; }
+}
+
+public class TargetFilter
+{
+    public int? Status { get; set; }
+    public string? ClassA { get; set; }
+}
+
+public class UpdateData
+{
+  public string? Title { get; set; }
+    public string? Body { get; set; }
+}
+```
+
+#### **Insert Record**
+
+**Dictionary Version:**
+```csharp
+var insertData = new Dictionary<string, object>
+{
+  { "Title", "New Title" },
+    { "Body", "Body Content" },
+    { "ClassA", "Category A" },
+    { "NumA", 100 },
+    { "DateA", "2025/01/01" },
+    { "CheckA", true }
+};
+
+var response = await bridge.Insert("2826", insertData);
+```
+
+**Class Instance Version:**
+```csharp
+var insertData = new ResultRecord
+{
+    Title = "New Title",
+    Body = "Body Content",
+    ClassA = "Category A",
+    NumA = 100,
+    DateA = "2025/01/01",
+    CheckA = true
+};
+
+var response = await bridge.Insert("2826", insertData);
+Console.WriteLine($"StatusCode: {response.StatusCode}, Id: {response.Id}");
+```
+
+#### **Bulk Insert**
+
+**Class Instance Version:**
+```csharp
+var dataList = new List<ResultRecord>
+{
+    new() { Title = "Data 1", ClassA = "Category 1", NumA = 1 },
+new() { Title = "Data 2", ClassA = "Category 2", NumA = 2 }
+};
+
+var response = await bridge.BulkInsert("2826", dataList);
+```
+
+#### **Update Record (by ID)**
+
+**Class Instance Version:**
+```csharp
+var updateData = new UpdateData
+{
+    Title = "Updated Title",
+    Body = "Updated Body"
+};
+
+var response = await bridge.Update("12345", updateData);
+```
+
+#### **Update Record (by Conditions)**
+
+**Class Instance Version:**
+```csharp
+var targetColumns = new TargetFilter
+{
+    Status = 100,
+    ClassA = "Category A"
+};
+
+var updateData = new UpdateData
+{
+    Title = "Bulk Updated Title"
+};
+
+var responses = await bridge.Update("2826", targetColumns, updateData);
+```
+
+#### **Upsert (Insert or Update)**
+
+**Class Instance Version:**
+```csharp
+var upsertData = new ResultRecord
+{
+    Title = "Upsert Data",
+    ClassA = "Category A",
+    ClassB = "Category B",
+    NumA = 500
+};
+
+var matchColumns = new List<string> { "ClassA", "ClassB" };
+var response = await bridge.Upsert("2826", matchColumns, upsertData);
+```
+
+#### **Delete Record (by ID)**
+
+```csharp
+var response = await bridge.Delete("12345");
+```
+
+#### **Delete Record (by Conditions)**
+
+**Class Instance Version:**
+```csharp
+var targetColumns = new TargetFilter
+{
+  Status = 900,
+    ClassA = "To Delete"
+};
+
+var responses = await bridge.Delete("2826", targetColumns);
+```
 
 ---
 
