@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using PleasanterBridge.src.Configuration;
 using PleasanterBridge.src.DataRepository.Entity;
 using PleasanterBridge.src.DataRepository.Utilities;
@@ -36,7 +37,19 @@ namespace PleasanterBridge.src.DataRepository.Service.Implementation
 
         public List<TablesEntity> Select(string referenceId, bool isReturnEntity = false)
         {
-            return DictionaryToTablesEntityConverter.Convert(SelectByReferenceType(referenceId, true));
+            return DictionaryToTablesEntityConverter.Convert(Select(referenceId));
+        }
+
+        public List<Dictionary<string, object>> Select(List<string> referenceIds)
+        {
+            return referenceIds.Select(x => SelectByReferenceType(x, true))
+                              .SelectMany(x => x)
+                              .ToList();
+        }
+
+        public List<TablesEntity> Select(List<string> referenceIds, bool isReturnEntity = false)
+        {
+            return DictionaryToTablesEntityConverter.Convert(Select(referenceIds));
         }
 
         public List<Dictionary<string, object>> Select(string siteId, Dictionary<string, object>? keyValue)
@@ -51,12 +64,7 @@ namespace PleasanterBridge.src.DataRepository.Service.Implementation
 
         public List<TablesEntity> Select(string siteId, Dictionary<string, object>? keyValue, bool isReturnEntity = false)
         {
-            if (keyValue == null)
-            {
-                IGetSitesProcess getSitesProcess = _dbProcessProvider.GetSitesProcess();
-                return DictionaryToTablesEntityConverter.Convert(getSitesProcess.GetAll(siteId));
-            }
-            return DictionaryToTablesEntityConverter.Convert(SelectByReferenceType(siteId, false, keyValue));
+            return DictionaryToTablesEntityConverter.Convert(Select(siteId, keyValue));
         }
 
         private List<Dictionary<string, object>> SelectByReferenceType(string id, bool isReferenceId, Dictionary<string, object>? keyValue = null)
