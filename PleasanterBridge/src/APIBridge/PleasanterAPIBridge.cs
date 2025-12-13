@@ -63,9 +63,7 @@ namespace PleasanterBridge.src.APIBridge
             settings.UserId,
             settings.Password,
             settings.DatabaseType
-        )
-        {
-        }
+        ){　}
 
         public PleasanterAPIBridge(
             HttpClient httpClient,
