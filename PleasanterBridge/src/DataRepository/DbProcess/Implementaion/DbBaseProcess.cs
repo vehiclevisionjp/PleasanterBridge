@@ -75,7 +75,7 @@ namespace PleasanterBridge.src.DataRepository.DbProcess.Implementaion
         protected TEntity GetSingleRecord(int referenceId, string idPropertyName)
         {
             Expression<Func<TEntity, bool>> lambda =
-                Utilities.ExpressionBuilder.BuildEqualsExpression<TEntity, int>(idPropertyName, Convert.ToInt32(referenceId));
+                Utilities.ExpressionBuilder.BuildEqualsExpression<TEntity, long>(idPropertyName, Convert.ToInt64(referenceId));
 
             return Entities
                 .Where(lambda)

@@ -94,16 +94,6 @@ namespace PleasanterBridge.src.DataRepository.Utilities
             // Nullable Œ^‚Ìˆ—
             Type? underlyingType = Nullable.GetUnderlyingType(targetType) ?? targetType;
 
-            // long ‚©‚ç int ‚Ö‚Ì“Á•Ê‚Èˆ—
-            if (value is long longValue && underlyingType == typeof(int))
-            {
-                if (longValue >= int.MinValue && longValue <= int.MaxValue)
-                {
-                    return (int)longValue;
-                }
-                return null;
-            }
-
             try
             {
                 return System.Convert.ChangeType(value, underlyingType);
