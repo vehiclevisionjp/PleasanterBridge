@@ -1,5 +1,6 @@
 using PleasanterBridge.src.APIBridge.Configuration;
 using PleasanterBridge.src.APIBridge.Contracts;
+using PleasanterBridge.src.APIBridge.Entity;
 using PleasanterBridge.src.APIBridge.Exception;
 using PleasanterBridge.src.APIBridge.Mapping;
 using PleasanterBridge.src.DataRepository.Service;
@@ -327,8 +328,14 @@ namespace PleasanterBridge.src.APIBridge
             pleasanterApiRequest.CheckHash = dataSet
                 .Where(data => data.Key.Contains(PleasanterApiRequestKey.Check.ToHashPrefix()) && data.Value is bool)
                 .ToDictionary(data => data.Key, data => data.Value is bool b ? b : false);
+            pleasanterApiRequest.ImageHash = dataSet
+                .Where(data => data.Key.Contains(PleasanterApiRequestKey.Image.ToHashPrefix()) && data.Value is ImageEntity imageEntity)
+                .ToDictionary(
+                    data => ((ImageEntity)data.Value).Columns,
+                    data => (ImageParamsEntity)data.Value
+                );
             /*
-                pleasanterApiRequest.ImageHash = dataSet
+                pleasanterApiRequest.AtachmentHash = dataSet
              */
 
             // fixme hashが一つもなかった場合どうするかは検証の必要アリ
