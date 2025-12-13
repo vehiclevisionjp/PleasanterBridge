@@ -13,6 +13,8 @@ Pleasanter の REST API を利用してデータの作成・更新・削除を�
 - **Upsert / BulkUpsert**: レコードの挿入または更新
 - **Delete**: レコードの削除（ID指定 / 条件指定）
 
+**✨ 新機能**: 各メソッドは `Dictionary<string, object>` だけでなく、**クラスインスタンス**も受け取れるようになりました！
+
 ### 2. **データベースリポジトリ (`IPleasanterRepository`)**
 Pleasanter データベースへ直接 SQL アクセスし、データを読み取ります（Select専用）。
 
@@ -54,7 +56,7 @@ public enum PleasanterReferenceType
     Sites,
     Results,
     Issues,
-Wikis
+    Wikis
 }
 ```
 
@@ -84,11 +86,11 @@ public IDbExecutionProcess Create(PleasanterReferenceType type)
 {
     return type switch
     {
-    PleasanterReferenceType.Results =>
-         new GetDbBaseProcess<ResultsEntity>(_settings, PleasanterIdPropertyName.ResultId),
+        PleasanterReferenceType.Results =>
+             new GetDbBaseProcess<ResultsEntity>(_settings, PleasanterIdPropertyName.ResultId),
 
- PleasanterReferenceType.Issues =>
-            new GetDbBaseProcess<IssuesEntity>(_settings, PleasanterIdPropertyName.IssueId),
+         PleasanterReferenceType.Issues =>
+                    new GetDbBaseProcess<IssuesEntity>(_settings, PleasanterIdPropertyName.IssueId),
 
         PleasanterReferenceType.Wikis =>
             new GetDbBaseProcess<WikisEntity>(_settings, PleasanterIdPropertyName.WikiId),
@@ -115,7 +117,7 @@ var wikiData = repository.Select("54321");
 // 条件指定も同様に統一されたインターフェース
 var filteredData = repository.Select("2826", new Dictionary<string, object>
 {
-{ "Status", 100 },
+    { "Status", 100 },
     { "ClassA", "分類A" }
 });
 ```
@@ -129,7 +131,7 @@ API アクセスでも、条件指定による Update や Delete で同じ仕組
 var targetColumns = new Dictionary<string, object>
 {
     { "Status", 100 },
-  { "ClassA", "完了" }
+    { "ClassA", "完了" }
 };
 
 // Results テーブルでも Issues テーブルでも同じコードで動作
@@ -216,7 +218,7 @@ var httpClient = new HttpClient();
 
 // SQL Server (デフォルト)
 var bridge = new PleasanterAPIBridge(
- httpClient,
+    httpClient,
     apiKey: "your-api-key",
     server: "(local)",
     password: "your-password"
@@ -275,6 +277,12 @@ var builder = WebApplication.CreateBuilder(args);
 
 var settings = new PleasanterSettings(
     apiKey: "your-api-key",
+    url: "http://localhost:59802",
+    server: "localhost",
+    database: "Implem.Pleasanter",
+    userId: "postgres",
+    password: "your-password",
+    databaseType: DatabaseType.PostgreSQL
 );
 
 // PleasanterBridge を DI コンテナに登録
@@ -295,17 +303,17 @@ public class MyService
 
     public MyService(IPleasanterApiBridge bridge)
     {
-    _bridge = bridge;
+        _bridge = bridge;
     }
 
 public async Task InsertData()
     {
         var data = new Dictionary<string, object>
         {
-       { "Title", "テストタイトル" },
+            { "Title", "テストタイトル" },
             { "Body", "テスト本文" },
-      { "ClassA", "分類A" }
-      };
+            { "ClassA", "分類A" }
+        };
 
         var response = await _bridge.Insert("2826", data);
         Console.WriteLine($"Insert: {response.StatusCode}");
@@ -317,22 +325,7 @@ public async Task InsertData()
 
 ### 📖 API ブリッジの使用例
 
-
-```csharp
-var response = await bridge.Delete("12345");
-```
-
-#### **レコードの削除（条件指定）**
-
-```csharp
-var targetColumns = new Dictionary<string, object>
-{
-    { "Status", 900 },
-    { "ClassA", "削除対象" }
-};
-
-var responses = await bridge.Delete("2826", targetColumns);
-```
+// ...existing code...
 
 ---
 
@@ -428,7 +421,7 @@ public class MyService
         var result = _repository.Select("67");
         foreach (var record in result)
         {
-  Console.WriteLine(string.Join(", ", record));
+            Console.WriteLine(string.Join(", ", record));
         }
   }
 }
@@ -438,22 +431,7 @@ public class MyService
 
 ### 📖 データベースリポジトリの使用例
 
-
-```csharp
-var result = repository.Select("2826", keyValue: null);
-```
-
-#### **条件を指定してデータを取得**
-
-```csharp
-var keyValues = new Dictionary<string, object>
-{
-    { "Status", 100 },
-    { "ClassA", "分類A" }
-};
-
-var result = repository.Select("2826", keyValues);
-```
+// ...existing code...
 
 ---
 
