@@ -1,27 +1,29 @@
 ﻿namespace PleasanterBridge.src.APIBridge.Entity
 {
-    public class ImageEntity: ImageParamsEntity
+    public class ImageEntity
     {
-        public readonly string Columns = "";
+        public readonly string Base64;
+        public readonly bool HeadNewLine;
+        public readonly bool EndNewLine;
+        public readonly int Position;
+        public readonly string Alt;
+        public readonly string Extension;
 
         public ImageEntity(
-            string columns,
-            bool headNewLine,
-            bool endNewLine,
-            int position,
-            string alt,
-            string extension,
-            string base64
-        ):base(
-            headNewLine,
-            endNewLine,
-            position,
-            alt,
-            extension,
-            base64
+            string base64,
+            bool headNewLine = false,
+            bool endNewLine = false,
+            int position = -1,
+            string alt = "image",
+            string extension = ".png"
         )
         {
-            Columns = columns;
+            HeadNewLine = headNewLine;
+            EndNewLine = endNewLine;
+            Position = position;
+            Alt = alt;
+            Extension = extension;
+            Base64 = base64;
         }
     }
 }

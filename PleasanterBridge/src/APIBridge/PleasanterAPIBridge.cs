@@ -331,8 +331,8 @@ namespace PleasanterBridge.src.APIBridge
             pleasanterApiRequest.ImageHash = dataSet
                 .Where(data => data.Key.Contains(PleasanterApiRequestKey.Image.ToHashPrefix()) && data.Value is ImageEntity imageEntity)
                 .ToDictionary(
-                    data => ((ImageEntity)data.Value).Columns,
-                    data => (ImageParamsEntity)data.Value
+                    data => data.Key,
+                    data => (ImageEntity)data.Value
                 );
             /*
                 pleasanterApiRequest.AtachmentHash = dataSet
