@@ -20,17 +20,17 @@ namespace PleasanterBridge.src.DataRepository.DbProcess.Implementaion
             return Sites.ToList();
         }
 
-        protected List<SitesEntity> GetAll(int siteId)
+        protected List<SitesEntity> GetAll(long siteId)
         {
             return Sites
-                .Where(x => Convert.ToInt64(x.SiteId) == Convert.ToInt64(siteId))
+                .Where(x => x.SiteId == siteId)
                 .ToList() ?? throw new Exception("invalid siteId");
         }
 
-        protected SitesEntity Get(int siteId)
+        protected SitesEntity Get(long siteId)
         {
             return Sites
-                .Where(x => Convert.ToInt64(x.SiteId) == Convert.ToInt64(siteId))
+                .Where(x => x.SiteId == siteId)
                 .FirstOrDefault() ?? throw new Exception("invalid siteId");
         }
     }

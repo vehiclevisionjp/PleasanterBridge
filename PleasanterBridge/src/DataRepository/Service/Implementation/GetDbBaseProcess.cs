@@ -20,7 +20,7 @@ namespace PleasanterBridge.src.DataRepository.Service.Implementation
         }
 
         public List<Dictionary<string, object>> Execute(
-            int id,
+            long id,
             bool isReferenceId,
             Dictionary<string, object>? keyValue = null
         )
