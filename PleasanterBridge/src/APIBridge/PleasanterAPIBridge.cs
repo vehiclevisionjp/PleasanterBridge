@@ -66,13 +66,13 @@ namespace PleasanterBridge.src.APIBridge
         ){　}
 
         public PleasanterAPIBridge(
-              HttpClient httpClient,
+            HttpClient httpClient,
             IPleasanterSettings settings,
             IPleasanterUrlProvider urlProvider,
             IPleasanterRepository repository,
             IGetReferenceProcess referenceProcess,
             IPleasanterResponseHandler responseHandler
-         )
+        )
         {
             _httpClient = httpClient;
             _settings = settings;
@@ -82,6 +82,7 @@ namespace PleasanterBridge.src.APIBridge
             _pleasanterResponseHandler = responseHandler;
         }
 
+        // Dictionary版メソッド（既存）
         public async Task<PleasanterApiResponse> Insert(string siteId, Dictionary<string, object> dataRecord)
         {
             TypedDataValidator.Validate(dataRecord);
@@ -115,7 +116,6 @@ namespace PleasanterBridge.src.APIBridge
 
         public Task<List<PleasanterApiResponse>> BulkUpdate(Dictionary<string, object> updateData/*, string keyColumn = "ResultId"*/)
         {
-            TypedDataValidator.Validate(updateData);
             // Updateが実質SQLにおけるBulkupdateを実装してるので
             // 明示的にBulkupdateを使う場合の処理については別途考える
             // bulkupsertは存在するのだが、PleasanterのBulkupdateはId指定して更新などはできないため少し違う
@@ -128,6 +128,7 @@ namespace PleasanterBridge.src.APIBridge
             */
             // keyなしBulkUpsertは必ずBulkupdateにはなるんだが…
             // どうすっかなあ
+            TypedDataValidator.Validate(updateData);
             throw new NotImplementedException("BulkUpdate is not implemented yet.");
         }
 
@@ -158,6 +159,52 @@ namespace PleasanterBridge.src.APIBridge
             List<Task<PleasanterApiResponse>> tasks = resultIds.Select(resultId => DoDelete(resultId)).ToList();
 
             return (await Task.WhenAll(tasks)).ToList();
+        }
+
+        // ジェネリック版メソッド（新規）
+        public Task<PleasanterApiResponse> Insert<T>(string siteId, T dataRecord) where T : class
+        {
+            var dictionary = ObjectToDictionaryConverter.Convert(dataRecord);
+            return Insert(siteId, dictionary);
+        }
+
+        public Task<PleasanterApiResponse> BulkInsert<T>(string siteId, List<T> dataRecords) where T : class
+        {
+            var dictionaries = ObjectToDictionaryConverter.ConvertList(dataRecords);
+            return BulkInsert(siteId, dictionaries);
+        }
+
+        public Task<PleasanterApiResponse> Update<T>(string referenceId, T updateData) where T : class
+        {
+            var dictionary = ObjectToDictionaryConverter.Convert(updateData);
+            return Update(referenceId, dictionary);
+        }
+
+        public Task<List<PleasanterApiResponse>> Update<TTarget, TUpdate>(string siteId, TTarget targetColumns, TUpdate updateData) 
+            where TTarget : class 
+            where TUpdate : class
+        {
+            var targetDictionary = ObjectToDictionaryConverter.Convert(targetColumns);
+            var updateDictionary = ObjectToDictionaryConverter.Convert(updateData);
+            return Update(siteId, targetDictionary, updateDictionary);
+        }
+
+        public Task<PleasanterApiResponse> Upsert<T>(string siteId, List<string> matchColumns, T dataRecord) where T : class
+        {
+            var dictionary = ObjectToDictionaryConverter.Convert(dataRecord);
+            return Upsert(siteId, matchColumns, dictionary);
+        }
+
+        public Task<PleasanterApiResponse> BulkUpsert<T>(string siteId, List<string> matchColumns, List<T> dataRecords) where T : class
+        {
+            var dictionaries = ObjectToDictionaryConverter.ConvertList(dataRecords);
+            return BulkUpsert(siteId, matchColumns, dictionaries);
+        }
+
+        public Task<List<PleasanterApiResponse>> Delete<T>(string siteId, T targetColumns) where T : class
+        {
+            var dictionary = ObjectToDictionaryConverter.Convert(targetColumns);
+            return Delete(siteId, dictionary);
         }
 
         private List<string> GetTargetRecordIds(string siteId, Dictionary<string, object> targetColumns)
