@@ -23,7 +23,7 @@ namespace PleasanterBridge.src.DataRepository.DbProcess.Implementaion
         protected ItemsEntity Get(int referenceId)
         {
             return Items
-                .Where(x => Convert.ToInt32(x.ReferenceId) == Convert.ToInt32(referenceId))
+                .Where(x => Convert.ToInt64(x.ReferenceId) == Convert.ToInt64(referenceId))
                 .FirstOrDefault() ?? throw new Exception("invalid resultId");
         }
     }
