@@ -9,12 +9,14 @@ namespace PleasanterBridge.src.DataRepository.Service.Implementation
         where TEntity : class
     {
         private readonly PleasanterIdPropertyName _idPropertyName;
+        private readonly BinaryImageContentParser _binaryImageContentParser;
 
         public GetDbBaseProcess(IConnectionSettings settings, PleasanterIdPropertyName idPropertyName)
             : base(settings)
         {
             Entities = Set<TEntity>();
             _idPropertyName = idPropertyName;
+            _binaryImageContentParser = new BinaryImageContentParser(settings);
         }
 
         public List<Dictionary<string, object>> Execute(
@@ -23,7 +25,7 @@ namespace PleasanterBridge.src.DataRepository.Service.Implementation
             Dictionary<string, object>? keyValue = null
         )
         {
-            List<Dictionary<string, object>>? entity = null;
+            List<Dictionary<string, object>>? entities = null;
 
             if (isReferenceId)
             {
@@ -32,7 +34,7 @@ namespace PleasanterBridge.src.DataRepository.Service.Implementation
                 {
                     throw new Exception("data not found.");
                 }
-                entity = new List<Dictionary<string, object>> { EntityToDictionaryProcess.Convert(record) };
+                entities = new List<Dictionary<string, object>> { EntityToDictionaryProcess.Convert(record) };
             }
             else
             {
@@ -52,15 +54,40 @@ namespace PleasanterBridge.src.DataRepository.Service.Implementation
                     throw new Exception("data not found.");
                 }
 
-                entity = entityList.Select(EntityToDictionaryProcess.Convert).ToList();
+                entities = entityList.Select(EntityToDictionaryProcess.Convert).ToList();
             }
 
-            if (entity == null)
+            if (entities == null)
             {
                 throw new Exception("data not found.");
             }
 
-            return entity;
+            return BinarySetup(entities);
+        }
+
+        private List<Dictionary<string, object>> BinarySetup(List<Dictionary<string, object>> entities)
+        {
+            entities.ForEach(entity =>
+            {
+                // Body, Description, AttachmentsÇ™ÉLÅ[Ç…ä‹Ç‹ÇÍÇÈèÍçá
+                // Ç∆ÇËÇ†Ç¶Ç∏AttachmentÇÕñ≥éã
+                if (entity.ContainsKey("Body"))
+                {
+                    entity["Body"] = _binaryImageContentParser.ParseContentWithBinaryReferences(entity["Body"]?.ToString() ?? string.Empty);
+                }
+
+                // DescriptionÇÃèàóù
+                for (char c = 'A'; c <= 'Z'; c++)
+                {
+                    string descriptionKey = $"Description{c}";
+                    if (entity.ContainsKey(descriptionKey))
+                    {
+                        entity[descriptionKey] = _binaryImageContentParser.ParseContentWithBinaryReferences(entity[descriptionKey]?.ToString() ?? string.Empty);
+                    }
+                }
+            });
+
+            return entities;
         }
     }
 }
