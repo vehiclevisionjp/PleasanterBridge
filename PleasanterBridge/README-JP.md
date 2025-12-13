@@ -90,9 +90,9 @@ public IDbExecutionProcess Create(PleasanterReferenceType type)
          new GetDbBaseProcess<ResultsEntity>(_settings, PleasanterIdPropertyName.ResultId),
 
  PleasanterReferenceType.Issues =>
-     new GetDbBaseProcess<IssuesEntity>(_settings, PleasanterIdPropertyName.IssueId),
+            new GetDbBaseProcess<IssuesEntity>(_settings, PleasanterIdPropertyName.IssueId),
 
-    PleasanterReferenceType.Wikis =>
+        PleasanterReferenceType.Wikis =>
             new GetDbBaseProcess<WikisEntity>(_settings, PleasanterIdPropertyName.WikiId),
 
         _ => throw new InvalidOperationException($"Unsupported reference type: {type}")
@@ -219,11 +219,8 @@ var httpClient = new HttpClient();
 // SQL Server (デフォルト)
 var bridge = new PleasanterAPIBridge(
  httpClient,
-    pleasanterUrl: "http://localhost:59802",
     apiKey: "your-api-key",
     server: "(local)",
-    database: "Implem.Pleasanter",
-    userId: "sa",
     password: "your-password"
 );
 
@@ -262,12 +259,6 @@ using PleasanterBridge.src.Configuration;
 // PostgreSQL を使用する例
 var settings = new PleasanterSettings(
     apiKey: "your-api-key",
-    url: "http://localhost:59802",
-    server: "localhost",
-    database: "Implem.Pleasanter",
-    userId: "postgres",
-    password: "your-password",
-    databaseType: DatabaseType.PostgreSQL
 );
 
 var httpClient = new HttpClient();
@@ -284,14 +275,13 @@ using PleasanterBridge.src.APIBridge.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// 設定情報を作成（PostgreSQL を使用する例）
 var settings = new PleasanterSettings(
     apiKey: "your-api-key",
     url: "http://localhost:59802",
     server: "localhost",
     database: "Implem.Pleasanter",
     userId: "postgres",
-    password: "your-password",
+ password: "your-password",
     databaseType: DatabaseType.PostgreSQL
 );
 
@@ -318,14 +308,14 @@ public class MyService
 
 public async Task InsertData()
     {
-      var data = new Dictionary<string, object>
+        var data = new Dictionary<string, object>
         {
-    { "Title", "テストタイトル" },
-      { "Body", "テスト本文" },
-  { "ClassA", "分類A" }
-  };
+       { "Title", "テストタイトル" },
+            { "Body", "テスト本文" },
+      { "ClassA", "分類A" }
+      };
 
-    var response = await _bridge.Insert("2826", data);
+        var response = await _bridge.Insert("2826", data);
         Console.WriteLine($"Insert: {response.StatusCode}");
     }
 }
@@ -335,148 +325,7 @@ public async Task InsertData()
 
 ### 📖 API ブリッジの使用例
 
-#### **💡 Dictionary と クラスインスタンスの両方に対応**
-
-PleasanterBridge の API ブリッジメソッドは、従来の `Dictionary<string, object>` に加えて、**任意のクラスインスタンス**も受け取ることができます。
-
-**データクラスの定義例:**
-
-```csharp
-public class ResultRecord
-{
-  public string? Title { get; set; }
-    public string? Body { get; set; }
-    public string? ClassA { get; set; }
-    public string? ClassB { get; set; }
-    public int? NumA { get; set; }
-    public string? DateA { get; set; }
-    public bool? CheckA { get; set; }
-}
-
-public class TargetFilter
-{
-    public int? Status { get; set; }
-    public string? ClassA { get; set; }
-}
-
-public class UpdateData
-{
-    public string? Title { get; set; }
-    public string? Body { get; set; }
-}
-```
-
-#### **レコードの挿入**
-
-**Dictionary版:**
-```csharp
-var insertData = new Dictionary<string, object>
-{
-    { "Title", "新規タイトル" },
-  { "Body", "本文内容" },
-    { "ClassA", "分類A" },
-    { "NumA", 100 },
-    { "DateA", "2025/01/01" },
-    { "CheckA", true }
-};
-
-var response = await bridge.Insert("2826", insertData);
-```
-
-**クラスインスタンス版:**
-```csharp
-var insertData = new ResultRecord
-{
-    Title = "新規タイトル",
-    Body = "本文内容",
-    ClassA = "分類A",
-  NumA = 100,
-    DateA = "2025/01/01",
-    CheckA = true
-};
-
-var response = await bridge.Insert("2826", insertData);
-Console.WriteLine($"StatusCode: {response.StatusCode}, Id: {response.Id}");
-```
-
-#### **一括挿入**
-
-**クラスインスタンス版:**
-```csharp
-var dataList = new List<ResultRecord>
-{
-    new() { Title = "データ1", ClassA = "分類1", NumA = 1 },
-    new() { Title = "データ2", ClassA = "分類2", NumA = 2 }
-};
-
-var response = await bridge.BulkInsert("2826", dataList);
-```
-
-#### **レコードの更新（ID指定）**
-
-**クラスインスタンス版:**
-```csharp
-var updateData = new UpdateData
-{
-    Title = "更新後タイトル",
- Body = "更新後本文"
-};
-
-var response = await bridge.Update("12345", updateData);
-```
-
-#### **レコードの更新（条件指定）**
-
-**クラスインスタンス版:**
-```csharp
-var targetColumns = new TargetFilter
-{
-    Status = 100,
-    ClassA = "分類A"
-};
-
-var updateData = new UpdateData
-{
-    Title = "一括更新タイトル"
-};
-
-var responses = await bridge.Update("2826", targetColumns, updateData);
-```
-
-#### **Upsert（挿入または更新）**
-
-**クラスインスタンス版:**
-```csharp
-var upsertData = new ResultRecord
-{
-    Title = "Upsertデータ",
-    ClassA = "分類A",
-    ClassB = "分類B",
- NumA = 500
-};
-
-var matchColumns = new List<string> { "ClassA", "ClassB" };
-var response = await bridge.Upsert("2826", matchColumns, upsertData);
-```
-
-#### **レコードの削除（ID指定）**
-
-```csharp
-var response = await bridge.Delete("12345");
-```
-
-#### **レコードの削除（条件指定）**
-
-**クラスインスタンス版:**
-```csharp
-var targetColumns = new TargetFilter
-{
-    Status = 900,
- ClassA = "削除対象"
-};
-
-var responses = await bridge.Delete("2826", targetColumns);
-```
+// ...existing code...
 
 ---
 
@@ -493,7 +342,7 @@ using PleasanterBridge.src.Configuration;
 // SQL Server (デフォルト)
 var repository = new PleasanterRepository(
     server: "(local)",
- database: "Implem.Pleasanter",
+    database: "Implem.Pleasanter",
     userId: "sa",
     password: "your-password"
 );
@@ -525,11 +374,7 @@ using PleasanterBridge.src.DataRepository.Service;
 
 // PostgreSQL を使用する例
 var settings = new ConnectionSettings(
-    server: "localhost",
     database: "Implem.Pleasanter",
-    userId: "postgres",
-  password: "your-password",
-    databaseType: DatabaseType.PostgreSQL
 );
 
 var repository = new PleasanterRepository(settings);
@@ -548,12 +393,6 @@ var builder = WebApplication.CreateBuilder(args);
 // MySQL を使用する例
 var settings = new PleasanterSettings(
     apiKey: "your-api-key",
-    url: "http://localhost:59802",
-    server: "localhost",
-    database: "Implem.Pleasanter",
-    userId: "root",
-    password: "your-password",
-    databaseType: DatabaseType.MySQL
 );
 
 // PleasanterBridge（API + DB）を DI コンテナに登録
@@ -579,7 +418,7 @@ public class MyService
 
     public void GetData()
     {
-    var result = _repository.Select("67");
+        var result = _repository.Select("67");
         foreach (var record in result)
         {
   Console.WriteLine(string.Join(", ", record));
@@ -591,6 +430,8 @@ public class MyService
 ---
 
 ### 📖 データベースリポジトリの使用例
+
+// ...existing code...
 
 ---
 
@@ -604,7 +445,6 @@ API アクセスと DB アクセスの両方に必要な設定を管理します
 |------------|------|------|
 | `ApiyKey` | `string` | Pleasanter API キー |
 | `Url` | `string` | Pleasanter の URL |
-| `Server` | `string` | データベースサーバー名 |
 | `Database` | `string` | データベース名 |
 | `UserId` | `string` | データベースユーザーID |
 | `Password` | `string` | データベースパスワード |
@@ -616,7 +456,6 @@ DB アクセス専用の設定を管理します。
 
 | プロパティ名 | 型 | 説明 |
 |------------|------|------|
-| `Server` | `string` | データベースサーバー名 |
 | `Database` | `string` | データベース名 |
 | `UserId` | `string` | データベースユーザーID |
 | `Password` | `string` | データベースパスワード |
@@ -639,13 +478,11 @@ public enum DatabaseType
 
 ## 📂 プロジェクト構成
 
-// ...existing code...
 
 ---
 
 ## 🧪 テスト
 
-// ...existing code...
 
 ---
 
