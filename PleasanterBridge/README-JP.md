@@ -180,11 +180,19 @@ dotnet pack -c Release -o ./nupkg
 |------------|----------|------|
 | `Microsoft.EntityFrameworkCore` | 9.0.11 | データベースアクセス |
 | `Microsoft.EntityFrameworkCore.SqlServer` | 9.0.11 | SQL Server プロバイダー |
+| `MySql.EntityFrameworkCore` | 9.0.0 | MySQL プロバイダー |
+| `Npgsql.EntityFrameworkCore.PostgreSQL` | 9.0.2 | PostgreSQL プロバイダー |
 | `Microsoft.Extensions.Http` | 10.0.0 | HTTP クライアント管理 |
 
 ### ターゲットフレームワーク
 
 - **.NET 9.0** (`net9.0`)
+
+### サポートされているデータベース
+
+- **SQL Server** (デフォルト)
+- **MySQL**
+- **PostgreSQL**
 
 ---
 
@@ -202,16 +210,40 @@ PleasanterBridge は、**API ブリッジ**と**データベースリポジト�
 
 ```csharp
 using PleasanterBridge.src.APIBridge;
+using PleasanterBridge.src.Configuration;
 
 var httpClient = new HttpClient();
+
+// SQL Server (デフォルト)
 var bridge = new PleasanterAPIBridge(
  httpClient,
-    pleasanterUrl: "your-pleasanter-url",
     apiKey: "your-api-key",
     server: "(local)",
-    database: "Implem.Pleasanter(default)",
-    userId: "sa(default)",
     password: "your-password"
+);
+
+// MySQL
+var bridgeMySQL = new PleasanterAPIBridge(
+    httpClient,
+    pleasanterUrl: "http://localhost:59802",
+    apiKey: "your-api-key",
+    server: "localhost",
+    database: "Implem.Pleasanter",
+    userId: "root",
+    password: "your-password",
+    databaseType: DatabaseType.MySQL
+);
+
+// PostgreSQL
+var bridgePostgreSQL = new PleasanterAPIBridge(
+    httpClient,
+    pleasanterUrl: "http://localhost:59802",
+    apiKey: "your-api-key",
+    server: "localhost",
+    database: "Implem.Pleasanter",
+    userId: "postgres",
+    password: "your-password",
+    databaseType: DatabaseType.PostgreSQL
 );
 ```
 
@@ -220,14 +252,11 @@ var bridge = new PleasanterAPIBridge(
 ```csharp
 using PleasanterBridge.src.APIBridge;
 using PleasanterBridge.src.APIBridge.Configuration;
+using PleasanterBridge.src.Configuration;
 
+// PostgreSQL を使用する例
 var settings = new PleasanterSettings(
     apiKey: "your-api-key",
-    url: "your-pleasanter-url",
-    server: "(local)",
-    database: "Implem.Pleasanter(default)",
-    userId: "sa(default)",
-    password: "your-password"
 );
 
 var httpClient = new HttpClient();
@@ -244,14 +273,8 @@ using PleasanterBridge.src.APIBridge.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// 設定情報を作成
 var settings = new PleasanterSettings(
     apiKey: "your-api-key",
-    url: "your-pleasanter-url",
-    server: "(local)",
-    database: "Implem.Pleasanter(default)",
-    userId: "sa(default)",
-    password: "your-password"
 );
 
 // PleasanterBridge を DI コンテナに登録
@@ -294,79 +317,6 @@ public async Task InsertData()
 
 ### 📖 API ブリッジの使用例
 
-#### **レコードの挿入**
-
-```csharp
-var insertData = new Dictionary<string, object>
-{
-    { "Title", "新規タイトル" },
-    { "Body", "本文内容" },
-    { "ClassA", "分類A" },
-    { "NumA", 100 },
- { "DateA", "2025/01/01" },
-    { "CheckA", true }
-};
-
-var response = await bridge.Insert("2826", insertData);
-Console.WriteLine($"StatusCode: {response.StatusCode}, Id: {response.Id}");
-```
-
-#### **一括挿入**
-
-```csharp
-var dataList = new List<Dictionary<string, object>>
-{
-    new() { { "Title", "データ1" }, { "ClassA", "分類1" } },
-    new() { { "Title", "データ2" }, { "ClassA", "分類2" } }
-};
-
-var response = await bridge.BulkInsert("2826", dataList);
-```
-
-#### **レコードの更新（ID指定）**
-
-```csharp
-var updateData = new Dictionary<string, object>
-{
-    { "Title", "更新後タイトル" },
-    { "ClassA", "更新後分類" }
-};
-
-var response = await bridge.Update("12345", updateData);
-```
-
-#### **レコードの更新（条件指定）**
-
-```csharp
-var targetColumns = new Dictionary<string, object>
-{
-    { "Status", 100 },
- { "ClassA", "分類A" }
-};
-
-var updateData = new Dictionary<string, object>
-{
-    { "Title", "一括更新タイトル" }
-};
-
-var responses = await bridge.Update("2826", targetColumns, updateData);
-```
-
-#### **Upsert（挿入または更新）**
-
-```csharp
-var upsertData = new Dictionary<string, object>
-{
-    { "Title", "Upsertデータ" },
-    { "ClassA", "分類A" },
-    { "ClassB", "分類B" }
-};
-
-var matchColumns = new List<string> { "ClassA", "ClassB" };
-var response = await bridge.Upsert("2826", matchColumns, upsertData);
-```
-
-#### **レコードの削除（ID指定）**
 
 ```csharp
 var response = await bridge.Delete("12345");
@@ -394,12 +344,32 @@ var responses = await bridge.Delete("2826", targetColumns);
 
 ```csharp
 using PleasanterBridge.src.DataRepository.Service;
+using PleasanterBridge.src.Configuration;
 
+// SQL Server (デフォルト)
 var repository = new PleasanterRepository(
     server: "(local)",
     database: "Implem.Pleasanter",
     userId: "sa",
     password: "your-password"
+);
+
+// MySQL
+var repositoryMySQL = new PleasanterRepository(
+    server: "localhost",
+    database: "Implem.Pleasanter",
+    userId: "root",
+    password: "your-password",
+    databaseType: DatabaseType.MySQL
+);
+
+// PostgreSQL
+var repositoryPostgreSQL = new PleasanterRepository(
+    server: "localhost",
+    database: "Implem.Pleasanter",
+    userId: "postgres",
+    password: "your-password",
+    databaseType: DatabaseType.PostgreSQL
 );
 ```
 
@@ -409,11 +379,9 @@ var repository = new PleasanterRepository(
 using PleasanterBridge.src.Configuration;
 using PleasanterBridge.src.DataRepository.Service;
 
+// PostgreSQL を使用する例
 var settings = new ConnectionSettings(
-    server: "(local)",
     database: "Implem.Pleasanter",
-    userId: "sa",
-    password: "your-password"
 );
 
 var repository = new PleasanterRepository(settings);
@@ -429,13 +397,9 @@ using PleasanterBridge.src.APIBridge.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// MySQL を使用する例
 var settings = new PleasanterSettings(
     apiKey: "your-api-key",
-    url: "your-pleasanter-url",
-    server: "(local)",
-    database: "Implem.Pleasanter(default)",
-    userId: "sa(default)",
-    password: "your-password"
 );
 
 // PleasanterBridge（API + DB）を DI コンテナに登録
@@ -474,18 +438,6 @@ public class MyService
 
 ### 📖 データベースリポジトリの使用例
 
-#### **ReferenceID でデータを取得**
-
-```csharp
-var result = repository.Select("67");
-
-foreach (var record in result)
-{
-    Console.WriteLine($"Title: {record["Title"]}, Status: {record["Status"]}");
-}
-```
-
-#### **SiteID でデータを取得**
 
 ```csharp
 var result = repository.Select("2826", keyValue: null);
@@ -515,10 +467,10 @@ API アクセスと DB アクセスの両方に必要な設定を管理します
 |------------|------|------|
 | `ApiyKey` | `string` | Pleasanter API キー |
 | `Url` | `string` | Pleasanter の URL |
-| `Server` | `string` | SQL Server のサーバー名 |
 | `Database` | `string` | データベース名 |
 | `UserId` | `string` | データベースユーザーID |
 | `Password` | `string` | データベースパスワード |
+| `DatabaseType` | `DatabaseType` | データベースタイプ (SqlServer/MySQL/PostgreSQL) |
 
 ### **`IConnectionSettings` / `ConnectionSettings`**
 
@@ -526,53 +478,33 @@ DB アクセス専用の設定を管理します。
 
 | プロパティ名 | 型 | 説明 |
 |------------|------|------|
-| `Server` | `string` | SQL Server のサーバー名 |
 | `Database` | `string` | データベース名 |
 | `UserId` | `string` | データベースユーザーID |
 | `Password` | `string` | データベースパスワード |
+| `DatabaseType` | `DatabaseType` | データベースタイプ (SqlServer/MySQL/PostgreSQL) |
+
+### **`DatabaseType` Enum**
+
+サポートされているデータベースタイプ：
+
+```csharp
+public enum DatabaseType
+{
+    SqlServer,  // デフォルト
+    MySQL,
+    PostgreSQL
+}
+```
 
 ---
 
 ## 📂 プロジェクト構成
 
-```
-PleasanterBridge/
-├── src/
-│   ├── APIBridge/           # API アクセス関連
-│   │   ├── Configuration/      # 設定クラス
-│   │   ├── Contracts/          # API リクエスト・レスポンス
-│   │   ├── Exception/    # API 例外
-│   │   ├── Factory/    # ファクトリークラス
-│   │   ├── Mapping/            # マッピング処理
-│   │   └── Utilities/          # ユーティリティ
-│   ├── DataRepository/         # DB アクセス関連
-│   │   ├── Data/    # DB コンテキスト
-│   │   ├── DbProcess/       # DB 処理
-│   │   ├── Entity/    # エンティティ
-│   │   ├── Service/            # サービス層
-│   │   └── Utilities/          # ユーティリティ
-│   ├── Configuration/          # 共通設定
-│   └── Utilities/          # 共通ユーティリティ
-├── Tests/   # 統合テスト
-├── PleasanterBridge.csproj     # プロジェクトファイル
-├── build.bat         # ビルドスクリプト
-└── README.md            # このファイル
-```
 
 ---
 
 ## 🧪 テスト
 
-統合テストを実行するには：
-
-```bash
-cd Tests
-dotnet test
-```
-
-テストには実際の Pleasanter インスタンスと DB 接続情報が必要です。  
-`Tests/APIBridge/Integration/PleasanterAPIBridge_IntegrationTest.cs` および  
-`Tests/DataRepository/Integration/PleasanterRepository_IntegrationTest.cs` 内の接続情報を環境に合わせて変更してください。
 
 ---
 
