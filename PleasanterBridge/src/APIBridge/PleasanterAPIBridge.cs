@@ -3,6 +3,7 @@ using PleasanterBridge.src.APIBridge.Contracts;
 using PleasanterBridge.src.APIBridge.Entity;
 using PleasanterBridge.src.APIBridge.Exception;
 using PleasanterBridge.src.APIBridge.Mapping;
+using PleasanterBridge.src.APIBridge.Utilities;
 using PleasanterBridge.src.DataRepository.Service;
 using PleasanterBridge.src.DataRepository.Service.Implementation;
 using PleasanterBridge.src.Utilities;
@@ -22,7 +23,7 @@ namespace PleasanterBridge.src.APIBridge
 
         public PleasanterAPIBridge(
             HttpClient httpClient, 
-            string pleasanterUrl, 
+            string url, 
             string apiKey,
             string server,
             string database,
@@ -31,7 +32,7 @@ namespace PleasanterBridge.src.APIBridge
             src.Configuration.DatabaseType databaseType = src.Configuration.DatabaseType.SqlServer
         )
         {
-            if (string.IsNullOrEmpty(pleasanterUrl))
+            if (string.IsNullOrEmpty(url))
             {
                 throw new ArgumentException("Base URL is required.");
             }
@@ -39,14 +40,14 @@ namespace PleasanterBridge.src.APIBridge
             _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
             _settings = new PleasanterSettings(
                 apiKey,
-                pleasanterUrl,
+                url,
                 server,
                 database,
                 userId,
                 password,
                 databaseType
             );
-            _pleasanterUrlProvider = new PleasanterUrlProvider(pleasanterUrl);
+            _pleasanterUrlProvider = new PleasanterUrlProvider(url);
             _pleasanterRepository = new PleasanterRepository(_settings);
             _getReferenceProcess = new GetReferenceProcess(_settings);
             _pleasanterResponseHandler = new PleasanterResponseHandler(httpClient);
