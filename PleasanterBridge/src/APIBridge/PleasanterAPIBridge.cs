@@ -63,26 +63,24 @@ namespace PleasanterBridge.src.APIBridge
             settings.UserId,
             settings.Password,
             settings.DatabaseType
-        )
-        {
-        }
+        ){　}
 
         public PleasanterAPIBridge(
-          HttpClient httpClient,
-   IPleasanterSettings settings,
-     IPleasanterUrlProvider urlProvider,
-IPleasanterRepository repository,
- IGetReferenceProcess referenceProcess,
-       IPleasanterResponseHandler responseHandler
-     )
+              HttpClient httpClient,
+            IPleasanterSettings settings,
+            IPleasanterUrlProvider urlProvider,
+            IPleasanterRepository repository,
+            IGetReferenceProcess referenceProcess,
+            IPleasanterResponseHandler responseHandler
+         )
         {
-         _httpClient = httpClient;
-          _settings = settings;
-        _pleasanterUrlProvider = urlProvider;
-  _pleasanterRepository = repository;
+            _httpClient = httpClient;
+            _settings = settings;
+            _pleasanterUrlProvider = urlProvider;
+            _pleasanterRepository = repository;
             _getReferenceProcess = referenceProcess;
-     _pleasanterResponseHandler = responseHandler;
-  }
+            _pleasanterResponseHandler = responseHandler;
+        }
 
         public async Task<PleasanterApiResponse> Insert(string siteId, Dictionary<string, object> dataRecord)
         {
