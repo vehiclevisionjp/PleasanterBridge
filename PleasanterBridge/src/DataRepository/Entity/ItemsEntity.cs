@@ -5,7 +5,7 @@ namespace PleasanterBridge.src.DataRepository.Entity
     [PrimaryKey(nameof(ReferenceId))]
     internal class ItemsEntity
     {
-        public int ReferenceId { get; set; }
+        public long ReferenceId { get; set; }
         public int Ver { get; set; }
         public string? ReferenceType { get; set; }
         public long? SiteId { get; set; }
