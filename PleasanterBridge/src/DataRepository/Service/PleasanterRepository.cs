@@ -8,17 +8,18 @@ namespace PleasanterBridge.src.DataRepository.Service
     {
         private readonly IDbProcessProvider _dbProcessProvider;
 
-        public PleasanterRepository(string server, string database, string userId, string password)
-            : this(new DbProcessProvider(new ConnectionSettings(server, database, userId, password)))
+        public PleasanterRepository(
+            string server, 
+            string database, 
+            string userId, 
+            string password,
+            DatabaseType databaseType = DatabaseType.SqlServer)
+            : this(new DbProcessProvider(new ConnectionSettings(server, database, userId, password, databaseType)))
         {
         }
 
-        public PleasanterRepository(IConnectionSettings settings): this(
-            settings.Server,
-            settings.Database,
-            settings.UserId,
-            settings.Password
-        )
+        public PleasanterRepository(IConnectionSettings settings)
+            : this(new DbProcessProvider(settings))
         {
         }
 

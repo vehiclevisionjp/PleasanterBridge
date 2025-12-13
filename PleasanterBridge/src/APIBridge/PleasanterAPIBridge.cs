@@ -26,7 +26,8 @@ namespace PleasanterBridge.src.APIBridge
             string server,
             string database,
             string userId,
-            string password
+            string password,
+            src.Configuration.DatabaseType databaseType = src.Configuration.DatabaseType.SqlServer
         )
         {
             if (string.IsNullOrEmpty(pleasanterUrl))
@@ -41,7 +42,8 @@ namespace PleasanterBridge.src.APIBridge
                 server,
                 database,
                 userId,
-                password
+                password,
+                databaseType
             );
             _pleasanterUrlProvider = new PleasanterUrlProvider(pleasanterUrl);
             _pleasanterRepository = new PleasanterRepository(_settings);
@@ -54,24 +56,23 @@ namespace PleasanterBridge.src.APIBridge
             IPleasanterSettings settings
         ) : this(
             httpClient,
-            settings.ApiyKey,
             settings.Url,
+            settings.ApiyKey,
             settings.Server,
             settings.Database,
             settings.UserId,
-            settings.Password
-        )
-        {
-        }
+            settings.Password,
+            settings.DatabaseType
+        ){　}
 
         public PleasanterAPIBridge(
-            HttpClient httpClient,
+              HttpClient httpClient,
             IPleasanterSettings settings,
             IPleasanterUrlProvider urlProvider,
             IPleasanterRepository repository,
             IGetReferenceProcess referenceProcess,
             IPleasanterResponseHandler responseHandler
-        )
+         )
         {
             _httpClient = httpClient;
             _settings = settings;
