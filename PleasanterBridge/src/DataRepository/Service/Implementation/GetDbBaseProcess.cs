@@ -20,7 +20,7 @@ namespace PleasanterBridge.src.DataRepository.Service.Implementation
         }
 
         public List<Dictionary<string, object>> Execute(
-            int id,
+            long id,
             bool isReferenceId,
             Dictionary<string, object>? keyValue = null
         )
@@ -29,12 +29,19 @@ namespace PleasanterBridge.src.DataRepository.Service.Implementation
 
             if (isReferenceId)
             {
-                TEntity record = GetSingleRecord(id, _idPropertyName.ToString());
-                if (record == null)
+                try
                 {
-                    throw new Exception("data not found.");
+                    TEntity record = GetSingleRecord(id, _idPropertyName.ToString());
+                    if (record == null)
+                    {
+                        return new List<Dictionary<string, object>>();
+                    }
+                    entities = new List<Dictionary<string, object>> { EntityToDictionaryProcess.Convert(record) };
                 }
-                entities = new List<Dictionary<string, object>> { EntityToDictionaryProcess.Convert(record) };
+                catch (Exception)
+                {
+                    return new List<Dictionary<string, object>>();
+                }
             }
             else
             {
@@ -51,7 +58,7 @@ namespace PleasanterBridge.src.DataRepository.Service.Implementation
 
                 if(entityList == null || entityList.Count == 0)
                 {
-                    throw new Exception("data not found.");
+                    return new List<Dictionary<string, object>>();
                 }
 
                 entities = entityList.Select(EntityToDictionaryProcess.Convert).ToList();
@@ -59,10 +66,13 @@ namespace PleasanterBridge.src.DataRepository.Service.Implementation
 
             if (entities == null)
             {
-                throw new Exception("data not found.");
+                return new List<Dictionary<string, object>>();
             }
 
-            return BinarySetup(entities);
+            entities = BinarySetup(entities);
+            entities = NormalizeReferenceId(entities);
+
+            return entities;
         }
 
         private List<Dictionary<string, object>> BinarySetup(List<Dictionary<string, object>> entities)
@@ -73,7 +83,8 @@ namespace PleasanterBridge.src.DataRepository.Service.Implementation
                 // とりあえずAttachmentは無視
                 if (entity.ContainsKey("Body"))
                 {
-                    entity["Body"] = _binaryImageContentParser.ParseContentWithBinaryReferences(entity["Body"]?.ToString() ?? string.Empty);
+                    var bodyContent = _binaryImageContentParser.ParseContentWithBinaryReferences(entity["Body"]?.ToString() ?? string.Empty);
+                    entity["Body"] = bodyContent.Count > 0 ? bodyContent : new List<string> { "" };
                 }
 
                 // Descriptionの処理
@@ -82,8 +93,27 @@ namespace PleasanterBridge.src.DataRepository.Service.Implementation
                     string descriptionKey = $"Description{c}";
                     if (entity.ContainsKey(descriptionKey))
                     {
-                        entity[descriptionKey] = _binaryImageContentParser.ParseContentWithBinaryReferences(entity[descriptionKey]?.ToString() ?? string.Empty);
+                        var descriptionContent = _binaryImageContentParser.ParseContentWithBinaryReferences(entity[descriptionKey]?.ToString() ?? string.Empty);
+                        entity[descriptionKey] = descriptionContent.Count > 0 ? descriptionContent : new List<string> { "" };
                     }
+                }
+            });
+
+            return entities;
+        }
+
+        private List<Dictionary<string, object>> NormalizeReferenceId(List<Dictionary<string, object>> entities)
+        {
+            string originalIdPropertyName = _idPropertyName.ToString();
+
+            entities.ForEach(entity =>
+            {
+                if (entity.ContainsKey(originalIdPropertyName))
+                {
+                    // 元のIDプロパティの値をReferenceIdに設定
+                    entity["ReferenceId"] = entity[originalIdPropertyName];
+                    // 元のIDプロパティを削除
+                    entity.Remove(originalIdPropertyName);
                 }
             });
 
