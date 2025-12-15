@@ -62,7 +62,10 @@ namespace PleasanterBridge.src.DataRepository.Service.Implementation
                 throw new Exception("data not found.");
             }
 
-            return BinarySetup(entities);
+            entities = BinarySetup(entities);
+            entities = NormalizeReferenceId(entities);
+
+            return entities;
         }
 
         private List<Dictionary<string, object>> BinarySetup(List<Dictionary<string, object>> entities)
@@ -84,6 +87,24 @@ namespace PleasanterBridge.src.DataRepository.Service.Implementation
                     {
                         entity[descriptionKey] = _binaryImageContentParser.ParseContentWithBinaryReferences(entity[descriptionKey]?.ToString() ?? string.Empty);
                     }
+                }
+            });
+
+            return entities;
+        }
+
+        private List<Dictionary<string, object>> NormalizeReferenceId(List<Dictionary<string, object>> entities)
+        {
+            string originalIdPropertyName = _idPropertyName.ToString();
+
+            entities.ForEach(entity =>
+            {
+                if (entity.ContainsKey(originalIdPropertyName))
+                {
+                    // 元のIDプロパティの値をReferenceIdに設定
+                    entity["ReferenceId"] = entity[originalIdPropertyName];
+                    // 元のIDプロパティを削除
+                    entity.Remove(originalIdPropertyName);
                 }
             });
 
