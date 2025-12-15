@@ -39,23 +39,23 @@ namespace PleasanterBridge.src.DataRepository.DbProcess.Implementaion
             return Entities.ToList();
         }
 
-        protected List<TEntity> GetFromSiteId(int siteId)
+        protected List<TEntity> GetFromSiteId(long siteId)
         {
             PropertyInfo prop = typeof(TEntity).GetProperty("SiteId")
                 ?? throw new Exception("SiteId property not found");
 
             Expression<Func<TEntity, bool>> predicate =
-                Utilities.ExpressionBuilder.BuildEqualsExpression<TEntity, int>("SiteId", siteId);
+                Utilities.ExpressionBuilder.BuildEqualsExpression<TEntity, long>("SiteId", siteId);
 
             return Entities
                 .Where(predicate)
                 .ToList();
         }
 
-        protected List<TEntity> GetFromSiteId(int siteId, List<int> idList, string idPropertyName)
+        protected List<TEntity> GetFromSiteId(long siteId, List<long> idList, string idPropertyName)
         {
             Expression<Func<TEntity, bool>> siteIdPredicate =
-                Utilities.ExpressionBuilder.BuildEqualsExpression<TEntity, int>("SiteId", siteId);
+                Utilities.ExpressionBuilder.BuildEqualsExpression<TEntity, long>("SiteId", siteId);
 
             Expression<Func<TEntity, bool>> idListPredicate =
                 Utilities.ExpressionBuilder.BuildContainsExpression<TEntity>(idPropertyName, idList);
@@ -72,10 +72,10 @@ namespace PleasanterBridge.src.DataRepository.DbProcess.Implementaion
                 .ToList();
         }
 
-        protected TEntity GetSingleRecord(int referenceId, string idPropertyName)
+        protected TEntity GetSingleRecord(long referenceId, string idPropertyName)
         {
             Expression<Func<TEntity, bool>> lambda =
-                Utilities.ExpressionBuilder.BuildEqualsExpression<TEntity, int>(idPropertyName, Convert.ToInt32(referenceId));
+                Utilities.ExpressionBuilder.BuildEqualsExpression<TEntity, long>(idPropertyName, Convert.ToInt64(referenceId));
 
             return Entities
                 .Where(lambda)
@@ -83,7 +83,7 @@ namespace PleasanterBridge.src.DataRepository.DbProcess.Implementaion
                 ?? throw new Exception($"invalid {idPropertyName}");
         }
 
-        protected List<TEntity> GetFromIdList(List<int> idList, string idPropertyName)
+        protected List<TEntity> GetFromIdList(List<long> idList, string idPropertyName)
         {
             Expression<Func<TEntity, bool>> idListPredicate =
                 Utilities.ExpressionBuilder.BuildContainsExpression<TEntity>(idPropertyName, idList);
