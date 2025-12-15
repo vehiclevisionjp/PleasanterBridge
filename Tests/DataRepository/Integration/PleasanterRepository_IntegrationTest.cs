@@ -85,7 +85,7 @@ public class PleasanterRepository_IntegrationTest
     public void Select_ByReferenceId_ReturnClass_UsingSettingsConstructor_ShouldReturnData()
     {
         // Arrange
-        int referenceId = 67;
+        long referenceId = 67;
 
         IConnectionSettings settings = new ConnectionSettings(
             Server,
