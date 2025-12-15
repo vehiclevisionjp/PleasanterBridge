@@ -5,7 +5,7 @@ using PleasanterBridge.src.DataRepository.Entity;
 
 namespace PleasanterBridge.src.DataRepository.DbProcess.Implementaion
 {
-    public class ItemsProcess : DBContext
+    internal class ItemsProcess : DBContext
     {
         protected readonly IConnectionSettings Settings;
         protected DbSet<ItemsEntity> Items { get; set; }
@@ -20,10 +20,10 @@ namespace PleasanterBridge.src.DataRepository.DbProcess.Implementaion
             return Items.ToList();
         }
 
-        protected ItemsEntity Get(string referenceId)
+        protected ItemsEntity Get(long referenceId)
         {
             return Items
-                .Where(x => Convert.ToInt32(x.ReferenceId) == Convert.ToInt32(referenceId))
+                .Where(x => x.ReferenceId == referenceId)
                 .FirstOrDefault() ?? throw new Exception("invalid resultId");
         }
     }

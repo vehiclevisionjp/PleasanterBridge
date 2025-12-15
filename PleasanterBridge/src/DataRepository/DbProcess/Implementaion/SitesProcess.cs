@@ -5,7 +5,7 @@ using PleasanterBridge.src.DataRepository.Entity;
 
 namespace PleasanterBridge.src.DataRepository.DbProcess.Implementaion
 {
-    public class SitesProcess : DBContext
+    internal class SitesProcess : DBContext
     {
         protected readonly IConnectionSettings Settings;
         protected DbSet<SitesEntity> Sites { get; set; }
@@ -20,17 +20,17 @@ namespace PleasanterBridge.src.DataRepository.DbProcess.Implementaion
             return Sites.ToList();
         }
 
-        protected List<SitesEntity> GetAll(string siteId)
+        protected List<SitesEntity> GetAll(long siteId)
         {
             return Sites
-                .Where(x => Convert.ToInt32(x.SiteId) == Convert.ToInt32(siteId))
+                .Where(x => x.SiteId == siteId)
                 .ToList() ?? throw new Exception("invalid siteId");
         }
 
-        protected SitesEntity Get(string siteId)
+        protected SitesEntity Get(long siteId)
         {
             return Sites
-                .Where(x => Convert.ToInt32(x.SiteId) == Convert.ToInt32(siteId))
+                .Where(x => x.SiteId == siteId)
                 .FirstOrDefault() ?? throw new Exception("invalid siteId");
         }
     }

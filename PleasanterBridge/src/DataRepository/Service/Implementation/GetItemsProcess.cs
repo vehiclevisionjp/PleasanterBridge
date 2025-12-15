@@ -4,14 +4,14 @@ using PleasanterBridge.src.DataRepository.Entity;
 
 namespace PleasanterBridge.src.DataRepository.Service.Implementation
 {
-    public class GetItemsProcess : ItemsProcess, IGetItemsProcess
+    internal class GetItemsProcess : ItemsProcess, IGetItemsProcess
     {
         public GetItemsProcess(IConnectionSettings settings)
             : base(settings)
         {
         }
 
-        public string GetReferenceType(string referenceId)
+        public string GetReferenceType(long referenceId)
         {
             ItemsEntity itemsEntity = Get(referenceId);
 

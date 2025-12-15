@@ -1,8 +1,10 @@
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using PleasanterBridge.src.Configuration;
-using PleasanterBridge.src.DataRepository.Service.Implementation;
+using PleasanterBridge.src.DataRepository.Entity;
+using PleasanterBridge.src.DataRepository.Utilities;
 using PleasanterBridge.src.Utilities;
 
-namespace PleasanterBridge.src.DataRepository.Service
+namespace PleasanterBridge.src.DataRepository.Service.Implementation
 {
     public class PleasanterRepository : IPleasanterRepository
     {
@@ -28,12 +30,29 @@ namespace PleasanterBridge.src.DataRepository.Service
             _dbProcessProvider = dbProcessProvider;
         }
 
-        public List<Dictionary<string, object>> Select(string referenceId)
+        public List<Dictionary<string, object>> Select(long referenceId)
         {
             return SelectByReferenceType(referenceId, true);
         }
 
-        public List<Dictionary<string, object>> Select(string siteId, Dictionary<string, object>? keyValue)
+        public List<TablesEntity> Select(long referenceId, bool isReturnEntity = false)
+        {
+            return DictionaryToTablesEntityConverter.Convert(Select(referenceId));
+        }
+
+        public List<Dictionary<string, object>> Select(List<long> referenceIds)
+        {
+            return referenceIds.Select(x => SelectByReferenceType(x, true))
+                              .SelectMany(x => x)
+                              .ToList();
+        }
+
+        public List<TablesEntity> Select(List<long> referenceIds, bool isReturnEntity = false)
+        {
+            return DictionaryToTablesEntityConverter.Convert(Select(referenceIds));
+        }
+
+        public List<Dictionary<string, object>> Select(long siteId, Dictionary<string, object>? keyValue)
         {
             if (keyValue == null)
             {
@@ -43,7 +62,12 @@ namespace PleasanterBridge.src.DataRepository.Service
             return SelectByReferenceType(siteId, false, keyValue);
         }
 
-        private List<Dictionary<string, object>> SelectByReferenceType(string id, bool isReferenceId, Dictionary<string, object>? keyValue = null)
+        public List<TablesEntity> Select(long siteId, Dictionary<string, object>? keyValue, bool isReturnEntity = false)
+        {
+            return DictionaryToTablesEntityConverter.Convert(Select(siteId, keyValue));
+        }
+
+        private List<Dictionary<string, object>> SelectByReferenceType(long id, bool isReferenceId, Dictionary<string, object>? keyValue = null)
         {
             IGetReferenceProcess referenceProcess = _dbProcessProvider.GetReferenceProcess();
 
