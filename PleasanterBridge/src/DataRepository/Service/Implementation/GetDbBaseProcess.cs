@@ -76,7 +76,8 @@ namespace PleasanterBridge.src.DataRepository.Service.Implementation
                 // ‚Æ‚è‚ ‚¦‚¸Attachment‚Í–³Ž‹
                 if (entity.ContainsKey("Body"))
                 {
-                    entity["Body"] = _binaryImageContentParser.ParseContentWithBinaryReferences(entity["Body"]?.ToString() ?? string.Empty);
+                    var bodyContent = _binaryImageContentParser.ParseContentWithBinaryReferences(entity["Body"]?.ToString() ?? string.Empty);
+                    entity["Body"] = bodyContent.Count > 0 ? bodyContent : new List<string> { "" };
                 }
 
                 // Description‚Ìˆ—
@@ -85,7 +86,8 @@ namespace PleasanterBridge.src.DataRepository.Service.Implementation
                     string descriptionKey = $"Description{c}";
                     if (entity.ContainsKey(descriptionKey))
                     {
-                        entity[descriptionKey] = _binaryImageContentParser.ParseContentWithBinaryReferences(entity[descriptionKey]?.ToString() ?? string.Empty);
+                        var descriptionContent = _binaryImageContentParser.ParseContentWithBinaryReferences(entity[descriptionKey]?.ToString() ?? string.Empty);
+                        entity[descriptionKey] = descriptionContent.Count > 0 ? descriptionContent : new List<string> { "" };
                     }
                 }
             });
