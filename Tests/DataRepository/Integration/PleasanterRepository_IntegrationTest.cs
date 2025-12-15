@@ -81,6 +81,29 @@ public class PleasanterRepository_IntegrationTest
     }
 
     [Fact]
+    public void Select_ByReferenceId_ReturnClass_UsingSettingsConstructor_ShouldReturnData()
+    {
+        // Arrange
+        long referenceId = 67;
+
+        IConnectionSettings settings = new ConnectionSettings(
+            Server,
+            Database,
+            UserId,
+            Password
+        );
+
+        IPleasanterRepository repo = new PleasanterRepository(settings);
+
+        List<TablesEntity> results = repo.Select(referenceId, true);
+
+        Assert.NotNull(results);
+        Assert.True(results.Count >= 0);
+
+        Console.WriteLine($"Select_ByReferenceId_UsingSettingsConstructor_ShouldReturnData: Count={results.Count}");
+    }
+
+    [Fact]
     public void Select_BySiteId_UsingSettingsConstructor_ShouldReturnData()
     {
         int siteId = 54;
