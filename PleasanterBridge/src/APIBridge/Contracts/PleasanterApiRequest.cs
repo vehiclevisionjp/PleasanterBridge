@@ -1,3 +1,5 @@
+using PleasanterBridge.src.APIBridge.Entity;
+
 namespace PleasanterBridge.src.APIBridge.Contracts
 {
     internal class PleasanterApiRequest
@@ -21,6 +23,7 @@ namespace PleasanterBridge.src.APIBridge.Contracts
         public Dictionary<string, string> DescriptionHash { get; set; } = new();
         public Dictionary<string, bool> CheckHash { get; set; } = new();
         public Dictionary<string, string> AttachmentsHash { get; set; } = new();
+        public Dictionary<string, ImageEntity> ImageHash { get; set; } = new();
 
         public PleasanterApiRequest(
             string? title,
