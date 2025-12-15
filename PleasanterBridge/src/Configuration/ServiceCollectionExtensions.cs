@@ -11,28 +11,57 @@ namespace PleasanterBridge.src.Configuration
     {
         public static IServiceCollection AddPleasanterBridge(
             this IServiceCollection services,
-            IPleasanterSettings settings
-        )
+            IPleasanterSettings settings)
         {
+            if (settings == null)
+            {
+                throw new ArgumentNullException(nameof(settings), "Settings cannot be null");
+            }
+
+            // İ’èî•ñ‚ğƒVƒ“ƒOƒ‹ƒgƒ“‚Å“o˜^
             services.AddSingleton(settings);
 
-            services.AddHttpClient<IPleasanterApiBridge>()
-                .ConfigureHttpClient(client =>
-                {
-                    client.BaseAddress = new Uri(settings.Url);
-                    client.DefaultRequestHeaders.Add("X-API-Key", settings.ApiyKey);
-                });
+            // HttpClient ‚ğ“o˜^iAPI ƒAƒNƒZƒX—pj
+            services.AddHttpClient();
 
-            services.AddTransient<IConnectionSettings>(_ => new ConnectionSettings(
-                settings.Server, settings.Database, settings.UserId, settings.Password));
+            // PleasanterUrlProvider ‚ğ“o˜^isettings.Url ‚ğ’“üj
+            services.AddTransient<IPleasanterUrlProvider>(provider =>
+                new PleasanterUrlProvider(settings.Url));
 
-            services.AddScoped<IPleasanterRepository, PleasanterRepository>();
+            // PleasanterResponseHandler ‚ğ“o˜^
+            services.AddTransient<IPleasanterResponseHandler>(provider =>
+            {
+                var httpClientFactory = provider.GetRequiredService<IHttpClientFactory>();
+                var httpClient = httpClientFactory.CreateClient();
+                return new PleasanterResponseHandler(httpClient);
+            });
 
-            services.AddTransient<IGetReferenceProcess, GetReferenceProcess>();
-            services.AddTransient<IPleasanterUrlProvider, PleasanterUrlProvider>();
-            services.AddTransient<IPleasanterResponseHandler, PleasanterResponseHandler>();
+            // PleasanterRepository ‚ğ“o˜^
+            services.AddScoped<IPleasanterRepository>(provider =>
+                new PleasanterRepository(settings));
 
-            services.AddScoped<IPleasanterApiBridge, PleasanterBridge.src.APIBridge.PleasanterAPIBridge>();
+            // GetReferenceProcess ‚ğ“o˜^
+            services.AddTransient<IGetReferenceProcess>(provider =>
+                new GetReferenceProcess(settings));
+
+            // PleasanterAPIBridge ‚ğ“o˜^
+            services.AddScoped<IPleasanterApiBridge>(provider =>
+            {
+                var httpClientFactory = provider.GetRequiredService<IHttpClientFactory>();
+                var httpClient = httpClientFactory.CreateClient();
+                var urlProvider = provider.GetRequiredService<IPleasanterUrlProvider>();
+                var repository = provider.GetRequiredService<IPleasanterRepository>();
+                var referenceProcess = provider.GetRequiredService<IGetReferenceProcess>();
+                var responseHandler = provider.GetRequiredService<IPleasanterResponseHandler>();
+
+                return new PleasanterAPIBridge(
+                    httpClient,
+                    settings,
+                    urlProvider,
+                    repository,
+                    referenceProcess,
+                    responseHandler);
+            });
 
             return services;
         }

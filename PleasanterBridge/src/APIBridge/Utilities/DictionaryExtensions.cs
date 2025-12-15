@@ -1,4 +1,4 @@
-namespace PleasanterBridge.src.Utilities
+namespace PleasanterBridge.src.APIBridge.Utilities
 {
     public static class DictionaryExtensions
     {

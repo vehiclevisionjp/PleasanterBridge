@@ -14,14 +14,14 @@ namespace PleasanterBridge.src.DataRepository.Service.Implementation
         {
         }
 
-        public new List<Dictionary<string, object>> GetAll(int siteId)
+        public new List<Dictionary<string, object>> GetAll(long siteId)
         {
             List<SitesEntity> siteEntities =  base.GetAll(siteId);
 
             return EntityToDictionaryProcess.Convert(siteEntities);
         }
 
-        public string GetReferenceType(int siteId)
+        public string GetReferenceType(long siteId)
         {
             SitesEntity sitesEntity = Get(siteId);
 

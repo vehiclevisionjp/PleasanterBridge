@@ -1,3 +1,5 @@
+using PleasanterBridge.src.APIBridge.Entity;
+
 namespace PleasanterBridge.src.Utilities
 {
     internal class TypedDataValidator
@@ -10,7 +12,9 @@ namespace PleasanterBridge.src.Utilities
             typeof(bool),
             typeof(double),
             typeof(decimal),
-            typeof(int)
+            typeof(int),
+            typeof(long),
+            typeof(ImageEntity)
         };
 
         public static void Validate(Dictionary<string, object> data)
