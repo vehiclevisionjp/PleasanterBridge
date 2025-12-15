@@ -13,6 +13,7 @@ namespace PleasanterBridge.src.Utilities
             typeof(double),
             typeof(decimal),
             typeof(int),
+            typeof(long),
             typeof(ImageEntity)
         };
 
