@@ -2,12 +2,12 @@ namespace PleasanterBridge.src.APIBridge.Mapping
 {
     public interface IPleasanterUrlProvider
     {
-        public string GetItemCreateUrl(string siteId);
+        public string GetItemCreateUrl(long siteId);
 
-        public string GetBulkUpsertUrl(string siteId);
+        public string GetBulkUpsertUrl(long siteId);
 
-        public string GetItemUpdateUrl(string recordId);
+        public string GetItemUpdateUrl(long recordId);
 
-        public string GetItemDeleteUrl(string recordId);
+        public string GetItemDeleteUrl(long recordId);
     }
 }

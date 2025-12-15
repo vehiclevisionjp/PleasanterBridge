@@ -46,7 +46,7 @@ public class PleasanterAPIBridgeTest
     public async Task Insert_CallsResponseHandlerAndReturnsResult()
     {
         var bridge = CreateBridge();
-        var siteId = "site";
+        var siteId = 100;
         var data = new Dictionary<string, object>();
         var url = "http://test";
         var response = new PleasanterApiResponse { StatusCode = 200, Message = "OK" };
@@ -66,7 +66,7 @@ public class PleasanterAPIBridgeTest
     public async Task BulkInsert_CallsResponseHandlerAndReturnsResult()
     {
         var bridge = CreateBridge();
-        var siteId = "site";
+        var siteId = 100;
         var dataList = new List<Dictionary<string, object>>();
         var url = "http://bulk";
         var response = new PleasanterApiResponse { StatusCode = 201, Message = "Bulk OK" };
@@ -84,7 +84,7 @@ public class PleasanterAPIBridgeTest
     public async Task Update_ByReferenceId_CallsResponseHandler()
     {
         var bridge = CreateBridge();
-        var refId = "id";
+        var refId = 1;
         var data = new Dictionary<string, object>();
         var url = "http://update";
         var response = new PleasanterApiResponse { StatusCode = 200, Message = "Updated" };
@@ -102,21 +102,21 @@ public class PleasanterAPIBridgeTest
     public async Task Update_BySiteId_CallsRepositoryAndResponseHandler()
     {
         var bridge = CreateBridge();
-        var siteId = "site";
+        var siteId = 100;
         var targetColumns = new Dictionary<string, object>();
         var updateData = new Dictionary<string, object>();
         var referenceType = "Results";
         var filteredRecords = new List<Dictionary<string, object>>
         {
-            new() { { "ResultId", "id1" } },
-            new() { { "ResultId", "id2" } }
+            new() { { "ResultId", 1 } },
+            new() { { "ResultId", 2 } }
         };
         var url = "http://update";
         var response = new PleasanterApiResponse { StatusCode = 200, Message = "Batch Updated" };
 
         _referenceProcessMock.Setup(x => x.Execute(siteId, false)).Returns(referenceType);
         _repositoryMock.Setup(x => x.Select(siteId, targetColumns)).Returns(filteredRecords);
-        _urlProviderMock.Setup(x => x.GetItemUpdateUrl(It.IsAny<string>())).Returns(url);
+        _urlProviderMock.Setup(x => x.GetItemUpdateUrl(It.IsAny<int>())).Returns(url);
         _responseHandlerMock.Setup(x => x.SendPost(It.IsAny<Dictionary<string, object>>(), url)).ReturnsAsync(response);
 
         var results = await bridge.Update(siteId, targetColumns, updateData);
@@ -129,7 +129,7 @@ public class PleasanterAPIBridgeTest
     public async Task Upsert_CallsBulkUpsert()
     {
         var bridge = CreateBridge();
-        var siteId = "site";
+        var siteId = 100;
         var matchColumns = new List<string> { "col" };
         var data = new Dictionary<string, object>();
         var url = "http://upsert";
@@ -148,7 +148,7 @@ public class PleasanterAPIBridgeTest
     public async Task BulkUpsert_CallsResponseHandler()
     {
         var bridge = CreateBridge();
-        var siteId = "site";
+        var siteId = 100;
         var matchColumns = new List<string> { "col" };
         var dataList = new List<Dictionary<string, object>>();
         var url = "http://bulkupsert";
@@ -167,7 +167,7 @@ public class PleasanterAPIBridgeTest
     public async Task Delete_ByReferenceId_CallsResponseHandler()
     {
         var bridge = CreateBridge();
-        var refId = "id";
+        var refId = 1;
         var url = "http://delete";
         var response = new PleasanterApiResponse { StatusCode = 200, Message = "Deleted" };
 
@@ -184,20 +184,20 @@ public class PleasanterAPIBridgeTest
     public async Task Delete_BySiteId_CallsRepositoryAndResponseHandler()
     {
         var bridge = CreateBridge();
-        var siteId = "site";
+        var siteId = 100;
         var targetColumns = new Dictionary<string, object>();
         var referenceType = "Results";
         var filteredRecords = new List<Dictionary<string, object>>
         {
-            new() { { "ResultId", "id1" } },
-            new() { { "ResultId", "id2" } }
+            new() { { "ResultId", 1 } },
+            new() { { "ResultId", 2 } }
         };
         var url = "http://delete";
         var response = new PleasanterApiResponse { StatusCode = 200, Message = "Batch Deleted" };
 
         _referenceProcessMock.Setup(x => x.Execute(siteId, false)).Returns(referenceType);
         _repositoryMock.Setup(x => x.Select(siteId, targetColumns)).Returns(filteredRecords);
-        _urlProviderMock.Setup(x => x.GetItemDeleteUrl(It.IsAny<string>())).Returns(url);
+        _urlProviderMock.Setup(x => x.GetItemDeleteUrl(It.IsAny<int>())).Returns(url);
         _responseHandlerMock.Setup(x => x.SendPost(It.IsAny<Dictionary<string, object>>(), url)).ReturnsAsync(response);
 
         var results = await bridge.Delete(siteId, targetColumns);

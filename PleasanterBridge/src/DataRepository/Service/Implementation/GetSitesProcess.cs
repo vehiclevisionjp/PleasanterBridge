@@ -5,7 +5,7 @@ using PleasanterBridge.src.DataRepository.Utilities;
 
 namespace PleasanterBridge.src.DataRepository.Service.Implementation
 {
-    public class GetSitesProcess : SitesProcess, IGetSitesProcess
+    internal class GetSitesProcess : SitesProcess, IGetSitesProcess
     {
 
 
@@ -14,14 +14,14 @@ namespace PleasanterBridge.src.DataRepository.Service.Implementation
         {
         }
 
-        public new List<Dictionary<string, object>> GetAll(string siteId)
+        public new List<Dictionary<string, object>> GetAll(long siteId)
         {
             List<SitesEntity> siteEntities =  base.GetAll(siteId);
 
             return EntityToDictionaryProcess.Convert(siteEntities);
         }
 
-        public string GetReferenceType(string siteId)
+        public string GetReferenceType(long siteId)
         {
             SitesEntity sitesEntity = Get(siteId);
 

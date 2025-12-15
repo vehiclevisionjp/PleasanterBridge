@@ -3,11 +3,11 @@ using Microsoft.EntityFrameworkCore;
 namespace PleasanterBridge.src.DataRepository.Entity
 {
     [PrimaryKey(nameof(IssueId))]
-    public class IssuesEntity
+    internal class IssuesEntity
     {
-        public long? SiteId { get; set; }
+        public long SiteId { get; set; }
         public DateTime UpdatedTime { get; set; }
-        public long? IssueId { get; set; }
+        public long IssueId { get; set; }
         public int Ver { get; set; }
         public string? Title { get; set; }
         public string? Body { get; set; }

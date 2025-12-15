@@ -10,7 +10,7 @@ public class PleasanterAPIBridge_IntegrationTest
     string Database = "Implem.Pleasanter";
     string UserId = "sa";
     string Password = "alderaan";
-    string SiteId = "2826"; // テスト用サイトID
+    int SiteId = 2826; // テスト用サイトID
 
     private IPleasanterApiBridge CreateBridge()
     {
@@ -49,13 +49,13 @@ public class PleasanterAPIBridge_IntegrationTest
             { "Title", "IntegrationTest Title Updated" },
             { "ClassA", "IntegrationTest ClassA Updated" }
         };
-        var updateResponse = await bridge.Update(insertResponse.Id.ToString(), updateData);
+        var updateResponse = await bridge.Update(insertResponse.Id, updateData);
         Console.WriteLine($"Update: Status={updateResponse.StatusCode}, Id={updateResponse.Id}, Message={updateResponse.Message}");
 
         Assert.True(updateResponse.StatusCode == 200 || updateResponse.StatusCode == 201);
 
         // 3. Delete
-        var deleteResponse = await bridge.Delete(insertResponse.Id.ToString());
+        var deleteResponse = await bridge.Delete(insertResponse.Id);
         Console.WriteLine($"Delete: Status={deleteResponse.StatusCode}, Id={deleteResponse.Id}, Message={deleteResponse.Message}");
 
         Assert.True(deleteResponse.StatusCode == 200 || deleteResponse.StatusCode == 204);
