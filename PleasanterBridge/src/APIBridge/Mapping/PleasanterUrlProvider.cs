@@ -2,31 +2,31 @@ namespace PleasanterBridge.src.APIBridge.Mapping
 {
     internal class PleasanterUrlProvider : IPleasanterUrlProvider
     {
-        private readonly string _pleasanterUrlBase;
+        private readonly string _url;
 
-        public PleasanterUrlProvider(string pleasanterUrlBase)
+        public PleasanterUrlProvider(string url)
         {
-            _pleasanterUrlBase = pleasanterUrlBase.TrimEnd('/');
+            _url = url.TrimEnd('/');
         }
 
-        public string GetItemCreateUrl(int siteId)
+        public string GetItemCreateUrl(long siteId)
         {
-            return $"{_pleasanterUrlBase}/api/items/{siteId}/create";
+            return $"{_url}/api/items/{siteId}/create";
         }
 
-        public string GetBulkUpsertUrl(int siteId)
+        public string GetBulkUpsertUrl(long siteId)
         {
-            return $"{_pleasanterUrlBase}/api/items/{siteId}/bulkupsert";
+            return $"{_url}/api/items/{siteId}/bulkupsert";
         }
 
-        public string GetItemUpdateUrl(int recordId)
+        public string GetItemUpdateUrl(long recordId)
         {
-            return $"{_pleasanterUrlBase}/api/items/{recordId}/update";
+            return $"{_url}/api/items/{recordId}/update";
         }
 
-        public string GetItemDeleteUrl(int recordId)
+        public string GetItemDeleteUrl(long recordId)
         {
-            return $"{_pleasanterUrlBase}/api/items/{recordId}/delete";
+            return $"{_url}/api/items/{recordId}/delete";
         }
     }
 }

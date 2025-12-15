@@ -23,7 +23,7 @@ namespace PleasanterBridge.src.APIBridge.Factory
 
             return new PleasanterAPIBridge(
                 httpClient: client,
-                pleasanterUrl: settings.Url,
+                url: settings.Url,
                 apiKey: settings.ApiyKey,
                 server: settings.Server,
                 database: settings.Database,
