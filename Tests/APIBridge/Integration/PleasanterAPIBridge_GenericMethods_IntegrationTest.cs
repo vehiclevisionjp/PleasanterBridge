@@ -36,7 +36,7 @@ namespace Tests.APIBridge.Integration
         string Database = "Implem.Pleasanter";
         string UserId = "sa";
         string Password = "alderaan";
-        string SiteId = "2826"; // テスト用サイトID
+        int SiteId = 2826; // テスト用サイトID
 
         private IPleasanterApiBridge CreateBridge()
         {
@@ -74,7 +74,7 @@ namespace Tests.APIBridge.Integration
             // クリーンアップ
             if (response.Id > 0)
             {
-                await bridge.Delete(response.Id.ToString());
+                await bridge.Delete(response.Id);
             }
         }
 
@@ -135,13 +135,13 @@ namespace Tests.APIBridge.Integration
                 Body = "Updated Body via Generic"
             };
 
-            var updateResponse = await bridge.Update(insertResponse.Id.ToString(), updateData);
+            var updateResponse = await bridge.Update(insertResponse.Id, updateData);
             Console.WriteLine($"Generic Update: Status={updateResponse.StatusCode}, Message={updateResponse.Message}");
 
             Assert.True(updateResponse.StatusCode == 200 || updateResponse.StatusCode == 201);
 
             // クリーンアップ
-            await bridge.Delete(insertResponse.Id.ToString());
+            await bridge.Delete(insertResponse.Id);
         }
 
         [Fact]
@@ -179,7 +179,7 @@ namespace Tests.APIBridge.Integration
             Assert.All(updateResponses, r => Assert.True(r.StatusCode == 200 || r.StatusCode == 201));
 
             // クリーンアップ
-            await bridge.Delete(insertResponse.Id.ToString());
+            await bridge.Delete(insertResponse.Id);
         }
 
         [Fact]
@@ -268,11 +268,11 @@ namespace Tests.APIBridge.Integration
             // クリーンアップ
             if (dictionaryResponse.Id > 0)
             {
-                await bridge.Delete(dictionaryResponse.Id.ToString());
+                await bridge.Delete(dictionaryResponse.Id);
             }
             if (genericResponse.Id > 0)
             {
-                await bridge.Delete(genericResponse.Id.ToString());
+                await bridge.Delete(genericResponse.Id);
             }
         }
     }

@@ -1,7 +1,9 @@
 using PleasanterBridge.src.APIBridge.Configuration;
 using PleasanterBridge.src.APIBridge.Contracts;
+using PleasanterBridge.src.APIBridge.Entity;
 using PleasanterBridge.src.APIBridge.Exception;
 using PleasanterBridge.src.APIBridge.Mapping;
+using PleasanterBridge.src.APIBridge.Utilities;
 using PleasanterBridge.src.DataRepository.Service;
 using PleasanterBridge.src.DataRepository.Service.Implementation;
 using PleasanterBridge.src.Utilities;
@@ -21,7 +23,7 @@ namespace PleasanterBridge.src.APIBridge
 
         public PleasanterAPIBridge(
             HttpClient httpClient, 
-            string pleasanterUrl, 
+            string url, 
             string apiKey,
             string server,
             string database,
@@ -30,7 +32,7 @@ namespace PleasanterBridge.src.APIBridge
             src.Configuration.DatabaseType databaseType = src.Configuration.DatabaseType.SqlServer
         )
         {
-            if (string.IsNullOrEmpty(pleasanterUrl))
+            if (string.IsNullOrEmpty(url))
             {
                 throw new ArgumentException("Base URL is required.");
             }
@@ -38,14 +40,14 @@ namespace PleasanterBridge.src.APIBridge
             _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
             _settings = new PleasanterSettings(
                 apiKey,
-                pleasanterUrl,
+                url,
                 server,
                 database,
                 userId,
                 password,
                 databaseType
             );
-            _pleasanterUrlProvider = new PleasanterUrlProvider(pleasanterUrl);
+            _pleasanterUrlProvider = new PleasanterUrlProvider(url);
             _pleasanterRepository = new PleasanterRepository(_settings);
             _getReferenceProcess = new GetReferenceProcess(_settings);
             _pleasanterResponseHandler = new PleasanterResponseHandler(httpClient);
@@ -83,31 +85,31 @@ namespace PleasanterBridge.src.APIBridge
         }
 
         // Dictionary版メソッド（既存）
-        public async Task<PleasanterApiResponse> Insert(int siteId, Dictionary<string, object> dataRecord)
+        public async Task<PleasanterApiResponse> Insert(long siteId, Dictionary<string, object> dataRecord)
         {
             TypedDataValidator.Validate(dataRecord);
             string url = _pleasanterUrlProvider.GetItemCreateUrl(siteId);
             return await _pleasanterResponseHandler.SendPost(SetRequest(dataRecord), url);
         }
 
-        public async Task<PleasanterApiResponse> BulkInsert(int siteId, List<Dictionary<string, object>> dataRecords)
+        public async Task<PleasanterApiResponse> BulkInsert(long siteId, List<Dictionary<string, object>> dataRecords)
         {
             TypedDataValidator.ValidateList(dataRecords);
             string url = _pleasanterUrlProvider.GetBulkUpsertUrl(siteId);
             return await _pleasanterResponseHandler.SendPost(setBulkInsertRequest(dataRecords), url);
         }
 
-        public async Task<PleasanterApiResponse> Update(int referenceId, Dictionary<string, object> updateData)
+        public async Task<PleasanterApiResponse> Update(long referenceId, Dictionary<string, object> updateData)
         {
             TypedDataValidator.Validate(updateData);
             return await DoUpdate(referenceId, updateData);
         }
 
-        public async Task<List<PleasanterApiResponse>> Update(int siteId, Dictionary<string, object> targetColumns, Dictionary<string, object> updateData)
+        public async Task<List<PleasanterApiResponse>> Update(long siteId, Dictionary<string, object> targetColumns, Dictionary<string, object> updateData)
         {
             TypedDataValidator.Validate(targetColumns);
             TypedDataValidator.Validate(updateData);
-            List<int> recordIds = GetTargetRecordIds(siteId, targetColumns);
+            List<long> recordIds = GetTargetRecordIds(siteId, targetColumns);
 
             List<Task<PleasanterApiResponse>> tasks = recordIds.Select(resultId => DoUpdate(resultId, updateData)).ToList();
 
@@ -132,13 +134,13 @@ namespace PleasanterBridge.src.APIBridge
             throw new NotImplementedException("BulkUpdate is not implemented yet.");
         }
 
-        public async Task<PleasanterApiResponse> Upsert(int siteId, List<string> matchColumns, Dictionary<string, object> dataRecord)
+        public async Task<PleasanterApiResponse> Upsert(long siteId, List<string> matchColumns, Dictionary<string, object> dataRecord)
         {
             TypedDataValidator.Validate(dataRecord);
             return await BulkUpsert(siteId, matchColumns, new List<Dictionary<string, object>> { dataRecord });
         }
 
-        public async Task<PleasanterApiResponse> BulkUpsert(int siteId, List<string> matchColumns, List<Dictionary<string, object>> dataRecords)
+        public async Task<PleasanterApiResponse> BulkUpsert(long siteId, List<string> matchColumns, List<Dictionary<string, object>> dataRecords)
         {
             TypedDataValidator.ValidateList(dataRecords);
             string url = _pleasanterUrlProvider.GetBulkUpsertUrl(siteId);
@@ -146,15 +148,15 @@ namespace PleasanterBridge.src.APIBridge
             return await _pleasanterResponseHandler.SendPost(setUpsertRequest(matchColumns, dataRecords), url);
         }
 
-        public async Task<PleasanterApiResponse> Delete(int referenceId)
+        public async Task<PleasanterApiResponse> Delete(long referenceId)
         {
             return await DoDelete(referenceId);
         }
 
-        public async Task<List<PleasanterApiResponse>> Delete(int siteId, Dictionary<string, object> targetColumns)
+        public async Task<List<PleasanterApiResponse>> Delete(long siteId, Dictionary<string, object> targetColumns)
         {
             TypedDataValidator.Validate(targetColumns);
-            List<int> resultIds = GetTargetRecordIds(siteId, targetColumns);
+            List<long> resultIds = GetTargetRecordIds(siteId, targetColumns);
 
             List<Task<PleasanterApiResponse>> tasks = resultIds.Select(resultId => DoDelete(resultId)).ToList();
 
@@ -162,25 +164,25 @@ namespace PleasanterBridge.src.APIBridge
         }
 
         // ジェネリック版メソッド（新規）
-        public Task<PleasanterApiResponse> Insert<T>(int siteId, T dataRecord) where T : class
+        public Task<PleasanterApiResponse> Insert<T>(long siteId, T dataRecord) where T : class
         {
             var dictionary = ObjectToDictionaryConverter.Convert(dataRecord);
             return Insert(siteId, dictionary);
         }
 
-        public Task<PleasanterApiResponse> BulkInsert<T>(int siteId, List<T> dataRecords) where T : class
+        public Task<PleasanterApiResponse> BulkInsert<T>(long siteId, List<T> dataRecords) where T : class
         {
             var dictionaries = ObjectToDictionaryConverter.ConvertList(dataRecords);
             return BulkInsert(siteId, dictionaries);
         }
 
-        public Task<PleasanterApiResponse> Update<T>(int referenceId, T updateData) where T : class
+        public Task<PleasanterApiResponse> Update<T>(long referenceId, T updateData) where T : class
         {
             var dictionary = ObjectToDictionaryConverter.Convert(updateData);
             return Update(referenceId, dictionary);
         }
 
-        public Task<List<PleasanterApiResponse>> Update<TTarget, TUpdate>(int siteId, TTarget targetColumns, TUpdate updateData) 
+        public Task<List<PleasanterApiResponse>> Update<TTarget, TUpdate>(long siteId, TTarget targetColumns, TUpdate updateData) 
             where TTarget : class 
             where TUpdate : class
         {
@@ -189,25 +191,25 @@ namespace PleasanterBridge.src.APIBridge
             return Update(siteId, targetDictionary, updateDictionary);
         }
 
-        public Task<PleasanterApiResponse> Upsert<T>(int siteId, List<string> matchColumns, T dataRecord) where T : class
+        public Task<PleasanterApiResponse> Upsert<T>(long siteId, List<string> matchColumns, T dataRecord) where T : class
         {
             var dictionary = ObjectToDictionaryConverter.Convert(dataRecord);
             return Upsert(siteId, matchColumns, dictionary);
         }
 
-        public Task<PleasanterApiResponse> BulkUpsert<T>(int siteId, List<string> matchColumns, List<T> dataRecords) where T : class
+        public Task<PleasanterApiResponse> BulkUpsert<T>(long siteId, List<string> matchColumns, List<T> dataRecords) where T : class
         {
             var dictionaries = ObjectToDictionaryConverter.ConvertList(dataRecords);
             return BulkUpsert(siteId, matchColumns, dictionaries);
         }
 
-        public Task<List<PleasanterApiResponse>> Delete<T>(int siteId, T targetColumns) where T : class
+        public Task<List<PleasanterApiResponse>> Delete<T>(long siteId, T targetColumns) where T : class
         {
             var dictionary = ObjectToDictionaryConverter.Convert(targetColumns);
             return Delete(siteId, dictionary);
         }
 
-        private List<int> GetTargetRecordIds(int siteId, Dictionary<string, object> targetColumns)
+        private List<long> GetTargetRecordIds(long siteId, Dictionary<string, object> targetColumns)
         {
             string referenceType = _getReferenceProcess.Execute(siteId, false);
             PleasanterReferenceType pleasanterReferenceType = PleasanterReferenceTypeExtensions.ParseReferenceType(referenceType);
@@ -229,20 +231,20 @@ namespace PleasanterBridge.src.APIBridge
             }
 
             List<Dictionary<string, object>> filteredRecords = _pleasanterRepository.Select(siteId: siteId, keyValue: targetColumns);
-            List<int> resultIds = filteredRecords
+            List<long> resultIds = filteredRecords
                 .Where(data => data.ContainsKey(idName) && data[idName] != null)
-                .Select(data => int.Parse(data[idName].ToString()!))
+                .Select(data => long.Parse(data[idName].ToString()!))
                 .ToList();
 
             return resultIds;
         }
 
-        private async Task<PleasanterApiResponse> DoUpdate(int recordId, Dictionary<string, object> updateData)
+        private async Task<PleasanterApiResponse> DoUpdate(long recordId, Dictionary<string, object> updateData)
         {
             string url = _pleasanterUrlProvider.GetItemUpdateUrl(recordId);
             return await _pleasanterResponseHandler.SendPost(SetRequest(updateData), url);
         }
-        private async Task<PleasanterApiResponse> DoDelete(int recordId)
+        private async Task<PleasanterApiResponse> DoDelete(long recordId)
         {
             string url = _pleasanterUrlProvider.GetItemDeleteUrl(recordId);
             return await _pleasanterResponseHandler.SendPost(SetDeleteRequest(), url);
@@ -325,8 +327,14 @@ namespace PleasanterBridge.src.APIBridge
             pleasanterApiRequest.CheckHash = dataSet
                 .Where(data => data.Key.Contains(PleasanterApiRequestKey.Check.ToHashPrefix()) && data.Value is bool)
                 .ToDictionary(data => data.Key, data => data.Value is bool b ? b : false);
+            pleasanterApiRequest.ImageHash = dataSet
+                .Where(data => data.Key.Contains(PleasanterApiRequestKey.Image.ToHashPrefix()) && data.Value is ImageEntity imageEntity)
+                .ToDictionary(
+                    data => data.Key,
+                    data => (ImageEntity)data.Value
+                );
             /*
-                pleasanterApiRequest.ImageHash = dataSet
+                pleasanterApiRequest.AtachmentHash = dataSet
              */
 
             // fixme hashが一つもなかった場合どうするかは検証の必要アリ

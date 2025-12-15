@@ -5,9 +5,9 @@ namespace PleasanterBridge.src.DataRepository.Entity
     [PrimaryKey(nameof(ReferenceId))]
     public class TablesEntity
     {
-        public int SiteId { get; set; }
+        public long SiteId { get; set; }
         public DateTime UpdatedTime { get; set; }
-        public int ReferenceId { get; set; }
+        public long ReferenceId { get; set; }
         public int Ver { get; set; }
         public string? Title { get; set; }
         public List<string>? Body { get; set; }
