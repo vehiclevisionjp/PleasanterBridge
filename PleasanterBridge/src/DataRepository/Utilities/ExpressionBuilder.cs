@@ -31,7 +31,7 @@ namespace PleasanterBridge.src.DataRepository.Utilities
 
         public static Expression<Func<TEntity, bool>> BuildContainsExpression<TEntity>(
             string propertyName,
-            List<string> idList)
+            List<long> idList)
             where TEntity : class
         {
             var entityParam = Expression.Parameter(typeof(TEntity), "x");

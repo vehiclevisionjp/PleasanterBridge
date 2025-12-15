@@ -3,11 +3,11 @@ using Microsoft.EntityFrameworkCore;
 namespace PleasanterBridge.src.DataRepository.Entity
 {
     [PrimaryKey(nameof(WikiId))]
-    public class WikisEntity
+    internal class WikisEntity
     {
-        public long? SiteId { get; set; }
+        public long SiteId { get; set; }
         public DateTime UpdatedTime { get; set; }
-        public long? WikiId { get; set; }
+        public long WikiId { get; set; }
         public int Ver { get; set; }
         public string? Title { get; set; }
         public string? Body { get; set; }

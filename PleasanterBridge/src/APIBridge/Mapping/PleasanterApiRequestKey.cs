@@ -14,6 +14,7 @@ namespace PleasanterBridge.src.APIBridge.Mapping
         Date,
         Description,
         Check,
-        Attachments
+        Attachments,
+        Image
     }
 }

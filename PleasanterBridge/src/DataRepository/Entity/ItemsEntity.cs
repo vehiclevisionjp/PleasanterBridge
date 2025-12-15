@@ -3,9 +3,9 @@ using Microsoft.EntityFrameworkCore;
 namespace PleasanterBridge.src.DataRepository.Entity
 {
     [PrimaryKey(nameof(ReferenceId))]
-    public class ItemsEntity
+    internal class ItemsEntity
     {
-        public long? ReferenceId { get; set; }
+        public long ReferenceId { get; set; }
         public int Ver { get; set; }
         public string? ReferenceType { get; set; }
         public long? SiteId { get; set; }

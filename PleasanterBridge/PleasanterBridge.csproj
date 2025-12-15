@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net9.0</TargetFramework>
@@ -7,7 +7,7 @@
     <Nullable>enable</Nullable>
     
     <PackageId>PleasanterBridge</PackageId>
-    <Version>1.0.0-local</Version>
+    <Version>1.1.7-local</Version>
     <Authors>YourName</Authors>
     <Company>YourCompany</Company>
     <Description>Pleasanter API Bridge Library</Description>

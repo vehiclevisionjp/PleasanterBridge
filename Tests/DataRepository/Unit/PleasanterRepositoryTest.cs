@@ -2,6 +2,7 @@ using Moq;
 using PleasanterBridge.src.Configuration;
 using PleasanterBridge.src.DataRepository.DbProcess;
 using PleasanterBridge.src.DataRepository.Service;
+using PleasanterBridge.src.DataRepository.Service.Implementation;
 using PleasanterBridge.src.Utilities;
 
 public class PleasanterRepositoryTest
@@ -46,7 +47,7 @@ public class PleasanterRepositoryTest
     public void Select_ByReferenceId_ReturnsExpectedResult()
     {
         var repo = new PleasanterRepository(_dbProcessProviderMock.Object);
-        var referenceId = "ref123";
+        var referenceId = 123;
         var referenceType = "Results";
         var expectedType = PleasanterReferenceType.Results;
         var expectedResult = new List<Dictionary<string, object>>
@@ -70,7 +71,7 @@ public class PleasanterRepositoryTest
     public void Select_BySiteIdAndKeyValue_ReturnsExpectedResult()
     {
         var repo = new PleasanterRepository(_dbProcessProviderMock.Object);
-        var siteId = "site456";
+        var siteId = 456;
         var keyValue = new Dictionary<string, object> { { "Key", "Value" } };
         var referenceType = "Issues";
         var expectedType = PleasanterReferenceType.Issues;
@@ -95,7 +96,7 @@ public class PleasanterRepositoryTest
     public void Select_BySiteIdWithoutKeyValue_ReturnsSites()
     {
         var repo = new PleasanterRepository(_dbProcessProviderMock.Object);
-        var siteId = "site789";
+        var siteId = 789;
         var expectedSites = new List<Dictionary<string, object>>
         {
             new() { { "SiteId", "site789" }, { "SiteName", "MySite" } }
