@@ -29,12 +29,19 @@ namespace PleasanterBridge.src.DataRepository.Service.Implementation
 
             if (isReferenceId)
             {
-                TEntity record = GetSingleRecord(id, _idPropertyName.ToString());
-                if (record == null)
+                try
                 {
-                    throw new Exception("data not found.");
+                    TEntity record = GetSingleRecord(id, _idPropertyName.ToString());
+                    if (record == null)
+                    {
+                        return new List<Dictionary<string, object>>();
+                    }
+                    entities = new List<Dictionary<string, object>> { EntityToDictionaryProcess.Convert(record) };
                 }
-                entities = new List<Dictionary<string, object>> { EntityToDictionaryProcess.Convert(record) };
+                catch (Exception)
+                {
+                    return new List<Dictionary<string, object>>();
+                }
             }
             else
             {
@@ -51,7 +58,7 @@ namespace PleasanterBridge.src.DataRepository.Service.Implementation
 
                 if(entityList == null || entityList.Count == 0)
                 {
-                    throw new Exception("data not found.");
+                    return new List<Dictionary<string, object>>();
                 }
 
                 entities = entityList.Select(EntityToDictionaryProcess.Convert).ToList();
@@ -59,7 +66,7 @@ namespace PleasanterBridge.src.DataRepository.Service.Implementation
 
             if (entities == null)
             {
-                throw new Exception("data not found.");
+                return new List<Dictionary<string, object>>();
             }
 
             entities = BinarySetup(entities);
