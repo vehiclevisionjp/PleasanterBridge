@@ -1,4 +1,5 @@
 using PleasanterBridge.src.Configuration;
+using PleasanterBridge.src.DataRepository.Entity;
 using PleasanterBridge.src.DataRepository.Service;
 using PleasanterBridge.src.DataRepository.Service.Implementation;
 
@@ -78,6 +79,29 @@ public class PleasanterRepository_IntegrationTest
         Assert.True(result.Count >= 0);
 
         Console.WriteLine($"Select_ByReferenceId_UsingSettingsConstructor_ShouldReturnData: Count={result.Count}");
+    }
+
+    [Fact]
+    public void Select_ByReferenceId_ReturnClass_UsingSettingsConstructor_ShouldReturnData()
+    {
+        // Arrange
+        int referenceId = 67;
+
+        IConnectionSettings settings = new ConnectionSettings(
+            Server,
+            Database,
+            UserId,
+            Password
+        );
+
+        IPleasanterRepository repo = new PleasanterRepository(settings);
+
+        List<TablesEntity> results = repo.Select(referenceId, true);
+
+        Assert.NotNull(results);
+        Assert.True(results.Count >= 0);
+
+        Console.WriteLine($"Select_ByReferenceId_UsingSettingsConstructor_ShouldReturnData: Count={results.Count}");
     }
 
     [Fact]
