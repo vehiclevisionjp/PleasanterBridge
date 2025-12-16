@@ -1,18 +1,28 @@
 using System.Linq.Expressions;
+using System.Reflection;
 
 internal static class WhereByDictionaryProcess
 {
     public static IQueryable<T> Execute<T>(this IQueryable<T> source, Dictionary<string, object> conditions)
     {
- if (conditions == null || conditions.Count == 0) return source;
+        if (conditions == null || conditions.Count == 0) return source;
 
         ParameterExpression param = Expression.Parameter(typeof(T), "x");
         Expression? body = null;
 
         foreach (var kvp in conditions)
         {
+            // プロパティが存在するかチェック
+            PropertyInfo? propertyInfo = typeof(T).GetProperty(kvp.Key);
+            if (propertyInfo == null)
+            {
+                // プロパティが存在しない場合、常にfalseを返す条件を追加（結果として0件になる）
+                body = body == null ? Expression.Constant(false) : Expression.AndAlso(body, Expression.Constant(false));
+                continue;
+            }
+
             var property = Expression.PropertyOrField(param, kvp.Key);
-                Expression condition;
+            Expression condition;
 
             // Classカラム(ClassA～ClassZ)かつ値が配列型の場合をチェック
             if (IsClassColumn(kvp.Key) && IsArrayType(kvp.Value))
@@ -40,7 +50,7 @@ internal static class WhereByDictionaryProcess
             return false;
 
         char lastChar = propertyName[5];
-            return lastChar >= 'A' && lastChar <= 'Z';
+        return lastChar >= 'A' && lastChar <= 'Z';
     }
 
     private static bool IsArrayType(object value)
@@ -58,7 +68,7 @@ internal static class WhereByDictionaryProcess
         {
             string[] arr => arr.ToList(),
             List<string> list => list,
-            _ => throw new ArgumentException("配列値はstring[]またはList<string>である必要があります")
+                _ => throw new ArgumentException("配列値はstring[]またはList<string>である必要があります")
         };
 
         if (searchValues.Count == 0)
