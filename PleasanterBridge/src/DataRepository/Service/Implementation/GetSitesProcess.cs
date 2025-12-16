@@ -10,13 +10,6 @@ namespace PleasanterBridge.src.DataRepository.Service.Implementation
         public GetSitesProcess(IConnectionSettings settings)
             : base(settings){ }
 
-        public new List<Dictionary<string, object>> GetAll(long siteId)
-        {
-            List<SitesEntity> siteEntities =  base.GetAll(siteId);
-
-             return EntityToDictionaryProcess.Convert(siteEntities);
-        }
-
         public string GetReferenceType(long siteId)
         {
             SitesEntity? sitesEntity = Get(siteId);

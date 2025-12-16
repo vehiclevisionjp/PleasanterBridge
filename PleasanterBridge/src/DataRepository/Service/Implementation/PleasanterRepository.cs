@@ -53,11 +53,6 @@ namespace PleasanterBridge.src.DataRepository.Service.Implementation
 
         public List<Dictionary<string, object>> Select(long siteId, Dictionary<string, object>? keyValue)
         {
-            if (keyValue == null)
-            {
-                IGetSitesProcess getSitesProcess = _dbProcessProvider.GetSitesProcess();
-                return getSitesProcess.GetAll(siteId);
-            }
             return SelectByReferenceType(siteId, false, keyValue);
         }
 
