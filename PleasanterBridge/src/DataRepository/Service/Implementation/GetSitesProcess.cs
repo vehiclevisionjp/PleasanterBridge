@@ -1,7 +1,6 @@
 using PleasanterBridge.src.Configuration;
 using PleasanterBridge.src.DataRepository.DbProcess.Implementaion;
 using PleasanterBridge.src.DataRepository.Entity;
-using PleasanterBridge.src.DataRepository.Utilities;
 
 namespace PleasanterBridge.src.DataRepository.Service.Implementation
 {
