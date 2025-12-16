@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using PleasanterBridge.src.Configuration;
 using PleasanterBridge.src.DataRepository.Entity;
 using PleasanterBridge.src.DataRepository.Utilities;
@@ -31,16 +32,19 @@ namespace PleasanterBridge.src.DataRepository.Service.Implementation
 
         public List<Dictionary<string, object>> Select(long referenceId)
         {
+            ParameterValidator.ValidateId(referenceId, nameof(referenceId));
             return SelectByReferenceType(referenceId, true);
         }
 
         public List<TablesEntity> Select(long referenceId, bool isReturnEntity = false)
         {
+            ParameterValidator.ValidateId(referenceId, nameof(referenceId));
             return DictionaryToTablesEntityConverter.Convert(Select(referenceId));
         }
 
         public List<Dictionary<string, object>> Select(List<long> referenceIds)
         {
+            ParameterValidator.ValidateIds(referenceIds, nameof(referenceIds));
             return referenceIds.Select(x => SelectByReferenceType(x, true))
                 .SelectMany(x => x)
                 .ToList();
@@ -48,16 +52,22 @@ namespace PleasanterBridge.src.DataRepository.Service.Implementation
 
         public List<TablesEntity> Select(List<long> referenceIds, bool isReturnEntity = false)
         {
+            ParameterValidator.ValidateIds(referenceIds, nameof(referenceIds));
             return DictionaryToTablesEntityConverter.Convert(Select(referenceIds));
         }
 
         public List<Dictionary<string, object>> Select(long siteId, Dictionary<string, object>? keyValue)
         {
+            ParameterValidator.ValidateId(siteId, nameof(siteId));
+            ParameterValidator.ValidateKeyValue(keyValue, nameof(keyValue));
+     
             return SelectByReferenceType(siteId, false, keyValue);
         }
 
         public List<TablesEntity> Select(long siteId, Dictionary<string, object>? keyValue, bool isReturnEntity = false)
         {
+            ParameterValidator.ValidateId(siteId, nameof(siteId));
+            ParameterValidator.ValidateKeyValue(keyValue, nameof(keyValue));
             return DictionaryToTablesEntityConverter.Convert(Select(siteId, keyValue));
         }
 
