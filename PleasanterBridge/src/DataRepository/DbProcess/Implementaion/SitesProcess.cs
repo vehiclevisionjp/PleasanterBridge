@@ -20,13 +20,6 @@ namespace PleasanterBridge.src.DataRepository.DbProcess.Implementaion
             return Sites.ToList();
         }
 
-        protected List<SitesEntity> GetAll(long siteId)
-        {
-            return Sites
-                .Where(x => x.SiteId == siteId)
-                .ToList();
-        }
-
         protected SitesEntity? Get(long siteId)
         {
             return Sites
