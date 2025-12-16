@@ -1,4 +1,3 @@
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using PleasanterBridge.src.Configuration;
 using PleasanterBridge.src.DataRepository.Entity;
 using PleasanterBridge.src.DataRepository.Utilities;
@@ -43,8 +42,8 @@ namespace PleasanterBridge.src.DataRepository.Service.Implementation
         public List<Dictionary<string, object>> Select(List<long> referenceIds)
         {
             return referenceIds.Select(x => SelectByReferenceType(x, true))
-                              .SelectMany(x => x)
-                              .ToList();
+                .SelectMany(x => x)
+                .ToList();
         }
 
         public List<TablesEntity> Select(List<long> referenceIds, bool isReturnEntity = false)
@@ -72,9 +71,15 @@ namespace PleasanterBridge.src.DataRepository.Service.Implementation
             IGetReferenceProcess referenceProcess = _dbProcessProvider.GetReferenceProcess();
 
             string referenceType = referenceProcess.Execute(id, isReferenceId);
-            PleasanterReferenceType pleasanterReferenceType = PleasanterReferenceTypeExtensions.ParseReferenceType(referenceType);
+            PleasanterReferenceType? pleasanterReferenceType = PleasanterReferenceTypeExtensions.ParseReferenceType(referenceType);
 
-            IDbExecutionProcess process = _dbProcessProvider.GetDbProcessFactory().Create(pleasanterReferenceType);
+            // referenceTypeが取得できなかった場合（IDがマッチしない場合）は空のリストを返す
+            if (pleasanterReferenceType == null)
+            {
+                return new List<Dictionary<string, object>>();
+            }
+
+            IDbExecutionProcess process = _dbProcessProvider.GetDbProcessFactory().Create(pleasanterReferenceType.Value);
 
             return process.Execute(id, isReferenceId, keyValue);
         }

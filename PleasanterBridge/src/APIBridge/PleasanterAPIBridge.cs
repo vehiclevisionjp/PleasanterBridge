@@ -212,9 +212,18 @@ namespace PleasanterBridge.src.APIBridge
         private List<long> GetTargetRecordIds(long siteId, Dictionary<string, object> targetColumns)
         {
             string referenceType = _getReferenceProcess.Execute(siteId, false);
-            PleasanterReferenceType pleasanterReferenceType = PleasanterReferenceTypeExtensions.ParseReferenceType(referenceType);
+            PleasanterReferenceType? pleasanterReferenceType = PleasanterReferenceTypeExtensions.ParseReferenceType(referenceType);
 
-            string idName = pleasanterReferenceType switch
+            // referenceTypeが取得できなかった場合（siteIdが存在しない場合など）
+            if (pleasanterReferenceType == null)
+            {
+                throw new PleasanterApiException(
+                    message: $"Site with ID '{siteId}' not found or has invalid reference type.",
+                    responseInfo: new PleasanterApiResponse()
+                );
+            }
+
+            string idName = pleasanterReferenceType.Value switch
             {
                 PleasanterReferenceType.Results => PleasanterIdPropertyName.ResultId.ToString(),
                 PleasanterReferenceType.Issues => PleasanterIdPropertyName.IssueId.ToString(),
