@@ -376,5 +376,74 @@ public class PleasanterRepository_IntegrationTest
         Assert.Contains("正の整数", exception.Message);
     }
 
+    [Fact]
+    public void Select_BySiteIdAndKeyValue_ShouldFilterBySiteId()
+    {
+        // Arrange
+        IConnectionSettings settings = new ConnectionSettings(Server, Database, UserId, Password);
+     IPleasanterRepository repo = new PleasanterRepository(settings);
+        
+        int siteId = 58;
+     Dictionary<string, object> keyValues = new Dictionary<string, object>
+     {
+      { "Status", 100 }
+        };
+
+        // Act
+   var result = repo.Select(siteId, keyValues);
+
+    // Assert
+  Assert.NotNull(result);
+        
+        Console.WriteLine($"Select_BySiteIdAndKeyValue_ShouldFilterBySiteId: Count={result.Count}");
+     
+// すべてのレコードが指定されたSiteIdを持っていることを確認
+        foreach (var record in result)
+        {
+     if (record.ContainsKey("SiteId"))
+        {
+            var recordSiteId = Convert.ToInt64(record["SiteId"]);
+      Assert.Equal(siteId, recordSiteId);
+    Console.WriteLine($"  Record SiteId: {recordSiteId}, Status: {record.GetValueOrDefault("Status", "N/A")}");
+       }
+        }
+    }
+
+    [Fact]
+    public void Select_BySiteIdAndKeyValue_WithExplicitSiteIdInKeyValue_ShouldUseExplicitSiteId()
+ {
+        // Arrange
+        IConnectionSettings settings = new ConnectionSettings(Server, Database, UserId, Password);
+        IPleasanterRepository repo = new PleasanterRepository(settings);
+      
+        int siteId = 58;
+    int explicitSiteId = 54; // keyValueで明示的に別のSiteIdを指定
+        
+ Dictionary<string, object> keyValues = new Dictionary<string, object>
+        {
+         { "SiteId", explicitSiteId }, // 明示的にSiteIdを指定
+ { "Status", 100 }
+  };
+
+   // Act
+ var result = repo.Select(siteId, keyValues);
+
+        // Assert
+        Assert.NotNull(result);
+        
+        Console.WriteLine($"Select_BySiteIdAndKeyValue_WithExplicitSiteIdInKeyValue_ShouldUseExplicitSiteId: Count={result.Count}");
+   
+        // keyValueで明示的に指定したSiteIdが優先されることを確認
+   foreach (var record in result)
+        {
+            if (record.ContainsKey("SiteId"))
+            {
+      var recordSiteId = Convert.ToInt64(record["SiteId"]);
+    Assert.Equal(explicitSiteId, recordSiteId);
+      Console.WriteLine($"  Record SiteId: {recordSiteId} (expected: {explicitSiteId})");
+    }
+        }
+    }
+
     #endregion
 }

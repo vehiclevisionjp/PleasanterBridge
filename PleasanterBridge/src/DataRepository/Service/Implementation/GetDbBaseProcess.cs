@@ -49,7 +49,14 @@ namespace PleasanterBridge.src.DataRepository.Service.Implementation
 
                 if (keyValue != null)
                 {
-                    entityList = GetFromDictionary(keyValue);
+                    // keyValueã«SiteIdã‚’è¿½åŠ ï¼ˆæ—¢ã«å­˜åœ¨ã™ã‚‹å ´åˆã¯ä¸Šæ›¸ãã—ãªã„ï¼‰
+                    Dictionary<string, object> keyValueWithSiteId = new Dictionary<string, object>(keyValue);
+                    if (!keyValueWithSiteId.ContainsKey("SiteId"))
+                    {
+                        keyValueWithSiteId["SiteId"] = id;
+                    }
+
+                    entityList = GetFromDictionary(keyValueWithSiteId);
                 }
                 else
                 {
@@ -79,15 +86,15 @@ namespace PleasanterBridge.src.DataRepository.Service.Implementation
         {
             entities.ForEach(entity =>
             {
-                // Body, Description, Attachments‚ªƒL[‚ÉŠÜ‚Ü‚ê‚éê‡
-                // ‚Æ‚è‚ ‚¦‚¸Attachment‚Í–³‹
+                // Body, Description, AttachmentsãŒã‚­ãƒ¼ã«å«ã¾ã‚Œã‚‹å ´åˆ
+                // ã¨ã‚Šã‚ãˆãšAttachmentã¯ç„¡è¦–
                 if (entity.ContainsKey("Body"))
                 {
                     var bodyContent = _binaryImageContentParser.ParseContentWithBinaryReferences(entity["Body"]?.ToString() ?? string.Empty);
                     entity["Body"] = bodyContent.Count > 0 ? bodyContent : new List<string> { "" };
                 }
 
-                // Description‚Ìˆ—
+                // Descriptionã®å‡¦ç†
                 for (char c = 'A'; c <= 'Z'; c++)
                 {
                     string descriptionKey = $"Description{c}";
@@ -110,9 +117,9 @@ namespace PleasanterBridge.src.DataRepository.Service.Implementation
             {
                 if (entity.ContainsKey(originalIdPropertyName))
                 {
-                    // Œ³‚ÌIDƒvƒƒpƒeƒB‚Ì’l‚ğReferenceId‚Éİ’è
+                    // å…ƒã®IDãƒ—ãƒ­ãƒ‘ãƒ†ã‚£ã®å€¤ã‚’ReferenceIdã«è¨­å®š
                     entity["ReferenceId"] = entity[originalIdPropertyName];
-                    // Œ³‚ÌIDƒvƒƒpƒeƒB‚ğíœ
+                    // å…ƒã®IDãƒ—ãƒ­ãƒ‘ãƒ†ã‚£ã‚’å‰Šé™¤
                     entity.Remove(originalIdPropertyName);
                 }
             });
