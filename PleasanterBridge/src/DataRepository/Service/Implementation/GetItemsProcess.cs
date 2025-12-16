@@ -13,11 +13,12 @@ namespace PleasanterBridge.src.DataRepository.Service.Implementation
 
         public string GetReferenceType(long referenceId)
         {
-            ItemsEntity itemsEntity = Get(referenceId);
+            ItemsEntity? itemsEntity = Get(referenceId);
 
             if(itemsEntity?.ReferenceType == null)
             {
-                throw new Exception("ReferenceId not found.");
+                // ReferenceIdが見つからない場合は空文字列を返す
+                return string.Empty;
             }
 
             return itemsEntity.ReferenceType;
