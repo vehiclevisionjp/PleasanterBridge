@@ -72,15 +72,14 @@ namespace PleasanterBridge.src.DataRepository.DbProcess.Implementaion
                 .ToList();
         }
 
-        protected TEntity GetSingleRecord(long referenceId, string idPropertyName)
+        protected TEntity? GetSingleRecord(long referenceId, string idPropertyName)
         {
             Expression<Func<TEntity, bool>> lambda =
                 Utilities.ExpressionBuilder.BuildEqualsExpression<TEntity, long>(idPropertyName, Convert.ToInt64(referenceId));
 
             return Entities
                 .Where(lambda)
-                .FirstOrDefault()
-                ?? throw new Exception($"invalid {idPropertyName}");
+                .FirstOrDefault();
         }
 
         protected List<TEntity> GetFromIdList(List<long> idList, string idPropertyName)
