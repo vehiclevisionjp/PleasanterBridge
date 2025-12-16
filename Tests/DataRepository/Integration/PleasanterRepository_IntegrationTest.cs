@@ -14,7 +14,7 @@ public class PleasanterRepository_IntegrationTest
     [Fact]
     public void Select_ByReferenceId_ConsoleOutput()
     {
-        int referenceId = 67; // テスト用の固定値
+        long referenceId = 67; // テスト用の固定値
 
         IPleasanterRepository repo = new PleasanterRepository(Server, Database, UserId, Password);
 
@@ -34,7 +34,7 @@ public class PleasanterRepository_IntegrationTest
     [Fact]
     public void DiSetting_Select_ByReferenceId_ConsoleOutput()
     {
-        int referenceId = 67; // テスト用の固定値
+        long referenceId = 67; // テスト用の固定値
 
         IConnectionSettings settings = new ConnectionSettings(
             Server,
@@ -62,7 +62,7 @@ public class PleasanterRepository_IntegrationTest
     public void Select_ByReferenceId_UsingSettingsConstructor_ShouldReturnData()
     {
         // Arrange
-        int referenceId = 67;
+        long referenceId = 67;
 
         IConnectionSettings settings = new ConnectionSettings(
             Server,
@@ -107,7 +107,7 @@ public class PleasanterRepository_IntegrationTest
     [Fact]
     public void Select_BySiteId_UsingSettingsConstructor_ShouldReturnData()
     {
-        int siteId = 54;
+        long siteId = 54;
 
         IConnectionSettings settings = new ConnectionSettings(
             Server,
@@ -129,7 +129,7 @@ public class PleasanterRepository_IntegrationTest
     [Fact]
     public void Select_ByKeyValue_UsingSettingsConstructor_ShouldReturnData()
     {
-        int siteId = 58;
+        long siteId = 58;
         Dictionary<string, object> keyValues = new Dictionary<string, object>
         {
             { "Status", 100 },
@@ -151,5 +151,42 @@ public class PleasanterRepository_IntegrationTest
         Assert.True(result.Count >= 0);
 
         Console.WriteLine($"Select_ByReferenceId_UsingSettingsConstructor_ShouldReturnData: Count={result.Count}");
+    }
+
+    [Fact]
+    public void Select_ByKeyValue_WithClassArrayMatching_ShouldReturnMatchingData()
+    {
+        // Arrange
+        long siteId = 108;
+
+        // Test with string array - will match records where ClassA contains "004" OR "008" OR "102"
+        Dictionary<string, object> keyValues = new Dictionary<string, object>
+        {
+            { "ClassH", new string[] { "812" } }
+        };
+
+        IConnectionSettings settings = new ConnectionSettings(
+            Server,
+            Database,
+            UserId,
+            Password
+        );
+
+        IPleasanterRepository repo = new PleasanterRepository(settings);
+
+        // Act
+        List<Dictionary<string, object>> result = repo.Select(siteId, keyValues);
+
+        // Assert
+        Assert.NotNull(result);
+
+        Console.WriteLine($"Select_ByKeyValue_WithClassArrayMatching_ShouldReturnMatchingData: Count={result.Count}");
+        foreach (var record in result)
+        {
+            if (record.ContainsKey("ClassH"))
+            {
+                Console.WriteLine($"  ClassH value: {record["ClassH"]}");
+            }
+        }
     }
 }
