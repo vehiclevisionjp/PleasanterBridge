@@ -14,6 +14,7 @@ namespace PleasanterBridge.src.Utilities
             typeof(decimal),
             typeof(int),
             typeof(long),
+            typeof(DateTime),
             typeof(ImageEntity)
         };
 
@@ -23,7 +24,8 @@ namespace PleasanterBridge.src.Utilities
             {
                 if (kvp.Value == null) continue;
                 Type valueType = kvp.Value.GetType();
-                if (!AllowedTypes.Contains(valueType))
+
+                if (!IsAllowedType(valueType))
                 {
                     throw new ArgumentException(
                         $"unsupported type '{kvp.Key}' : {valueType.Name}"
@@ -38,6 +40,40 @@ namespace PleasanterBridge.src.Utilities
             {
                 Validate(data);
             }
+        }
+
+        private static bool IsAllowedType(Type type)
+        {
+            // 基本型のチェック
+            if (AllowedTypes.Contains(type))
+            {
+                return true;
+            }
+
+            // Nullable型のチェック
+            Type? underlyingType = Nullable.GetUnderlyingType(type);
+            if (underlyingType != null)
+            {
+                return AllowedTypes.Contains(underlyingType);
+            }
+
+            // Dictionary<string, ImageEntity>のチェック
+            if (type.IsGenericType)
+            {
+                Type genericTypeDef = type.GetGenericTypeDefinition();
+                if (genericTypeDef == typeof(Dictionary<,>))
+                {
+                    Type[] genericArgs = type.GetGenericArguments();
+                    if (genericArgs.Length == 2 &&
+                        genericArgs[0] == typeof(string) &&
+                        genericArgs[1] == typeof(ImageEntity))
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
         }
     }
 }

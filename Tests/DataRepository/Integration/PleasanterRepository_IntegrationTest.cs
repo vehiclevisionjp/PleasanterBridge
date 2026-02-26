@@ -343,24 +343,24 @@ public class PleasanterRepository_IntegrationTest
     {
         // Arrange
         IConnectionSettings settings = new ConnectionSettings(Server, Database, UserId, Password);
-        IPleasanterRepository repo = new PleasanterRepository(settings);
+   IPleasanterRepository repo = new PleasanterRepository(settings);
         int siteId = 58;
 
-        // Dictionary with all valid types
-        Dictionary<string, object> keyValues = new Dictionary<string, object>
+  // Dictionary with all valid types
+  Dictionary<string, object> keyValues = new Dictionary<string, object>
         {
             { "Status", 100 },             // int
-            { "Title", "Test" },            // string
+      { "Title", "Test" },          // string
             { "WorkValue", 10.5m },              // decimal
-            { "CheckA", true }, // bool
-            { "DateA", DateTime.Now },           // DateTime
-            { "ClassA", new string[] { "001", "002" } },   // string[]
-            { "ClassB", new List<string> { "003" } }       // List<string>
+    { "CheckA", true }, // bool
+       { "DateA", DateTime.Now },           // DateTime
+   { "ClassA", new string[] { "001", "002" } },   // string[]
+       { "ClassB", new List<string> { "003" } }       // List<string>
         };
 
         // Act & Assert - Should not throw
         var result = repo.Select(siteId, keyValues);
-        Assert.NotNull(result);
+      Assert.NotNull(result);
     }
 
     [Fact]

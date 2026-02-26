@@ -1,4 +1,5 @@
 using PleasanterBridge.src.APIBridge;
+using PleasanterBridge.src.APIBridge.Entity;
 using PleasanterBridge.src.Configuration;
 using PleasanterBridge.src.DataRepository.Service;
 
@@ -129,5 +130,90 @@ public class PleasanterAPIBridge_IntegrationTest
         Console.WriteLine($"Upsert: Status={upsertResponse.StatusCode}, Message={upsertResponse.Message}");
 
         Assert.True(upsertResponse.StatusCode == 200 || upsertResponse.StatusCode == 201);
+    }
+
+    [Fact]
+    public async Task Insert_WithDateTimeAndImage_ShouldSendCorrectly()
+    {
+        // Arrange
+        var bridge = CreateBridge();
+        
+        // Base64エンコードされた小さなテスト画像（1x1 pngピクセル）
+        string base64Image = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==";
+      
+        var insertData = new Dictionary<string, object>
+        {
+            { "Title", "DateTimeとImageのテスト" },
+            { "Body", "DateTime型とDictionary<string, ImageEntity>型のテスト" },
+            { "DateA", DateTime.Now }, // DateTime型
+            { "Image", new Dictionary<string, ImageEntity>
+                {
+                    { "ImageA", new ImageEntity(base64Image) }
+                }
+            }
+        };
+
+        // Act
+        var response = await bridge.Insert(SiteId, insertData);
+
+        // Assert
+        Console.WriteLine($"Insert_WithDateTimeAndImage: Status={response.StatusCode}, Id={response.Id}, Message={response.Message}");
+        Console.WriteLine($"  SendData: {response.SendData}");
+        
+        Assert.True(response.StatusCode == 200 || response.StatusCode == 201);
+      
+        // クリーンアップ
+        if (response.Id > 0)
+        {
+            await bridge.Delete(response.Id);
+            Console.WriteLine($"  Cleanup: Deleted record {response.Id}");
+        }
+    }
+
+    [Fact]
+    public async Task Insert_WithImageDictionary_ShouldProcessImageHash()
+    {
+        // Arrange
+        var bridge = CreateBridge();
+        
+        string base64Image1 = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==";
+        string base64Image2 = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8DwHwAFBQIAX8jx0gAAAABJRU5ErkJggg==";
+     
+        var insertData = new Dictionary<string, object>
+        {
+            { "Title", "複数Imageのテスト" },
+            { "ClassA", "ImageTest" },
+            { "Image", new Dictionary<string, ImageEntity>
+              {
+                   { "ImageA", new ImageEntity(base64Image1) },
+                   { "ImageB", new ImageEntity(base64Image2) }
+              }
+            }
+        };
+
+        // Act
+        var response = await bridge.Insert(SiteId, insertData);
+
+        // Assert
+        Console.WriteLine($"Insert_WithImageDictionary: Status={response.StatusCode}, Id={response.Id}");
+        Console.WriteLine($"  Message: {response.Message}");
+        Console.WriteLine($"  SendData length: {response.SendData?.Length ?? 0}");
+  
+        Assert.True(response.StatusCode == 200 || response.StatusCode == 201);
+      
+        // SendDataにImageA, ImageBが含まれていることを確認
+        if (!string.IsNullOrEmpty(response.SendData))
+        {
+            Assert.Contains("ImageA", response.SendData);
+            Assert.Contains("ImageB", response.SendData);
+            Console.WriteLine("  ✓ ImageA and ImageB found in SendData");
+        }
+
+        // クリーンアップ
+        if (response.Id > 0)
+        {
+            await bridge.Delete(response.Id);
+            Console.WriteLine($"  Cleanup: Deleted record {response.Id}");
+        }
     }
 }
