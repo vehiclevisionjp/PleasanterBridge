@@ -1,13 +1,13 @@
-﻿namespace PleasanterBridge.src.APIBridge.Entity
+namespace PleasanterBridge.src.APIBridge.Entity
 {
     public class ImageEntity
     {
-        public readonly string Base64;
-        public readonly bool HeadNewLine;
-        public readonly bool EndNewLine;
-        public readonly int Position;
-        public readonly string Alt;
-        public readonly string Extension;
+        public string Base64 { get; }
+        public bool HeadNewLine { get; }
+        public bool EndNewLine { get; }
+        public int Position { get; }
+        public string Alt { get; }
+        public string Extension { get; }
 
         public ImageEntity(
             string base64,
