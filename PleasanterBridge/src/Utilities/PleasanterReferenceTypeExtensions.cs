@@ -2,8 +2,14 @@ namespace PleasanterBridge.src.Utilities
 {
     internal class PleasanterReferenceTypeExtensions
     {
-        public static PleasanterReferenceType ParseReferenceType(string dbValue)
+        public static PleasanterReferenceType? ParseReferenceType(string dbValue)
         {
+            // 空文字列やnullの場合はnullを返す
+            if (string.IsNullOrEmpty(dbValue))
+            {
+                return null;
+            }
+
             PleasanterReferenceType resultType;
 
             bool success = Enum.TryParse(
@@ -19,7 +25,8 @@ namespace PleasanterBridge.src.Utilities
             }
             else
             {
-                throw new ArgumentException($"Invalid reference type received from DB: {dbValue}", nameof(dbValue));
+                // 失敗した場合はnullを返す
+                return null;
             }
         }
     }

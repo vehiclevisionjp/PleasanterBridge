@@ -24,14 +24,14 @@ namespace PleasanterBridge.src.DataRepository.DbProcess.Implementaion
         {
             return Sites
                 .Where(x => x.SiteId == siteId)
-                .ToList() ?? throw new Exception("invalid siteId");
+                .ToList();
         }
 
-        protected SitesEntity Get(long siteId)
+        protected SitesEntity? Get(long siteId)
         {
             return Sites
                 .Where(x => x.SiteId == siteId)
-                .FirstOrDefault() ?? throw new Exception("invalid siteId");
+                .FirstOrDefault();
         }
     }
 }

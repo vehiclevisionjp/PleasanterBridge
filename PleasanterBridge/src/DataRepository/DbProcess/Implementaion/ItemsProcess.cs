@@ -20,11 +20,11 @@ namespace PleasanterBridge.src.DataRepository.DbProcess.Implementaion
             return Items.ToList();
         }
 
-        protected ItemsEntity Get(long referenceId)
+        protected ItemsEntity? Get(long referenceId)
         {
             return Items
                 .Where(x => x.ReferenceId == referenceId)
-                .FirstOrDefault() ?? throw new Exception("invalid resultId");
+                .FirstOrDefault();
         }
     }
 }
