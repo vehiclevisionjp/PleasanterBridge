@@ -103,7 +103,6 @@ public class PleasanterRepositoryTest
         };
 
         _dbProcessProviderMock.Setup(x => x.GetSitesProcess()).Returns(_getSitesProcessMock.Object);
-        _getSitesProcessMock.Setup(x => x.GetAll(siteId)).Returns(expectedSites);
 
         var result = repo.Select(siteId, null);
 
