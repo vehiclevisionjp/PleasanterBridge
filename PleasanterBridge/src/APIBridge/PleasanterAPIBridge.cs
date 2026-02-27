@@ -306,8 +306,8 @@ namespace PleasanterBridge.src.APIBridge
         {
             string? title = dataSet.TryGetValue(PleasanterApiRequestKey.Title.ToKeyString(), out var t) ? t as string : null;
             string? body = dataSet.TryGetValue(PleasanterApiRequestKey.Body.ToKeyString(), out var b) ? b as string : null;
-            string? startTime = dataSet.TryGetValue(PleasanterApiRequestKey.StartTime.ToKeyString(), out var st) ? st as string : null;
-            string? completionTime = dataSet.TryGetValue(PleasanterApiRequestKey.CompletionTime.ToKeyString(), out var ct) ? ct as string : null;
+            string? startTime = dataSet.TryGetValue(PleasanterApiRequestKey.StartTime.ToKeyString(), out var st) ? ConvertToDateString(st) : null;
+            string? completionTime = dataSet.TryGetValue(PleasanterApiRequestKey.CompletionTime.ToKeyString(), out var ct) ? ConvertToDateString(ct) : null;
             decimal? workValue = dataSet.TryGetValue(PleasanterApiRequestKey.WorkValue.ToKeyString(), out var wv) && wv is decimal d1 ? d1 : null;
             decimal? progressRate = dataSet.TryGetValue(PleasanterApiRequestKey.ProgressRate.ToKeyString(), out var pr) && pr is decimal d2 ? d2 : null;
 
@@ -328,26 +328,53 @@ namespace PleasanterBridge.src.APIBridge
                     data => Convert.ToDecimal(data.Value)
                 );
             pleasanterApiRequest.DateHash = dataSet
-                .Where(data => data.Key.Contains(PleasanterApiRequestKey.Date.ToHashPrefix()) && data.Value is string)
-                .ToDictionary(data => data.Key, data => data.Value as string ?? string.Empty);
+                .Where(data => data.Key.Contains(PleasanterApiRequestKey.Date.ToHashPrefix()) && (data.Value is string || data.Value is DateTime))
+                .ToDictionary(data => data.Key, data => ConvertToDateString(data.Value) ?? string.Empty);
             pleasanterApiRequest.DescriptionHash = dataSet
                 .Where(data => data.Key.Contains(PleasanterApiRequestKey.Description.ToHashPrefix()) && data.Value is string)
                 .ToDictionary(data => data.Key, data => data.Value as string ?? string.Empty);
             pleasanterApiRequest.CheckHash = dataSet
                 .Where(data => data.Key.Contains(PleasanterApiRequestKey.Check.ToHashPrefix()) && data.Value is bool)
                 .ToDictionary(data => data.Key, data => data.Value is bool b ? b : false);
-            pleasanterApiRequest.ImageHash = dataSet
-                .Where(data => data.Key.Contains(PleasanterApiRequestKey.Image.ToHashPrefix()) && data.Value is ImageEntity imageEntity)
-                .ToDictionary(
-                    data => data.Key,
-                    data => (ImageEntity)data.Value
-                );
+            
+            // ImageHashの処理 - Dictionary<string, ImageEntity>型または個別のImageEntity型を処理
+            if (dataSet.TryGetValue(PleasanterApiRequestKey.Image.ToKeyString(), out var imageValue))
+            {
+                if (imageValue is Dictionary<string, ImageEntity> imageDict)
+                {
+                    pleasanterApiRequest.ImageHash = imageDict;
+                }
+            }
+            else
+            {
+                // 個別のImageA, ImageB等のキーでImageEntityが指定されている場合の処理
+                pleasanterApiRequest.ImageHash = dataSet
+                    .Where(data => data.Key.Contains(PleasanterApiRequestKey.Image.ToHashPrefix()) && data.Value is ImageEntity)
+                    .ToDictionary(
+                        data => data.Key,
+                        data => (ImageEntity)data.Value
+                    );
+            }
+
             /*
-                pleasanterApiRequest.AtachmentHash = dataSet
+        pleasanterApiRequest.AtachmentHash = dataSet
              */
 
             // fixme hashが一つもなかった場合どうするかは検証の必要アリ
             return RequestToDictionaryProcess.Convert(pleasanterApiRequest);
+        }
+
+        /// <summary>
+        /// DateTime型またはstring型の値をPleasanter APIが受け付ける日付文字列に変換する
+        /// </summary>
+        private static string? ConvertToDateString(object? value)
+        {
+            return value switch
+            {
+                DateTime dt => dt.ToString("yyyy/MM/dd HH:mm:ss"),
+                string s => s,
+                _ => null
+            };
         }
     }
 }
