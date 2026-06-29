@@ -116,24 +116,6 @@ namespace PleasanterBridge.src.APIBridge
             return (await Task.WhenAll(tasks)).ToList();
         }
 
-        public Task<List<PleasanterApiResponse>> BulkUpdate(Dictionary<string, object> updateData/*, string keyColumn = "ResultId"*/)
-        {
-            // Updateが実質SQLにおけるBulkupdateを実装してるので
-            // 明示的にBulkupdateを使う場合の処理については別途考える
-            // bulkupsertは存在するのだが、PleasanterのBulkupdateはId指定して更新などはできないため少し違う
-            /*
-            List<Task<PleasanterApiResponse>> tasks = dataDic.Select(data => Update(data.Value!, data.Key)).ToList();
-
-            List<PleasanterApiResponse> results = (await Task.WhenAll(tasks)).ToList();
-
-            return results;
-            */
-            // keyなしBulkUpsertは必ずBulkupdateにはなるんだが…
-            // どうすっかなあ
-            TypedDataValidator.Validate(updateData);
-            throw new NotImplementedException("BulkUpdate is not implemented yet.");
-        }
-
         public async Task<PleasanterApiResponse> Upsert(long siteId, List<string> matchColumns, Dictionary<string, object> dataRecord)
         {
             TypedDataValidator.Validate(dataRecord);
