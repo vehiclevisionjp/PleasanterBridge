@@ -54,6 +54,15 @@ Or run the included `build.bat`:
 
 The generated package will be output to the `PleasanterBridge\nupkg\` folder.
 
+### Installation steps:
+
+1. Download [Visual C++ Redistributable (x64)](https://aka.ms/vs/17/release/vc_redist.x64.exe)
+2. Install on the server
+3. Restart the server
+4. Redeploy and run the application
+
+> **Note:** This requirement applies to Windows Server (e.g., Windows Server 2022) deployments. MySQL and PostgreSQL providers do not have this dependency.
+
 ---
 
 ## 🔧 Dependencies

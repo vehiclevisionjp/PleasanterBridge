@@ -172,6 +172,15 @@ dotnet pack -c Release -o ./nupkg
 
 生成されたパッケージは `PleasanterBridge\nupkg\` フォルダに出力されます。
 
+**インストール手順：**
+
+1. [Visual C++ Redistributable (x64)](https://aka.ms/vs/17/release/vc_redist.x64.exe) をダウンロード
+2. サーバーにインストール
+3. サーバーを再起動
+4. アプリケーションを再デプロイして実行
+
+> **注意:** この要件は Windows Server（例：Windows Server 2022）へのデプロイ時に適用されます。MySQL および PostgreSQL プロバイダーにはこの依存関係はありません。
+
 ---
 
 ## 🔧 依存関係
@@ -182,6 +191,7 @@ dotnet pack -c Release -o ./nupkg
 |------------|----------|------|
 | `Microsoft.EntityFrameworkCore` | 9.0.11 | データベースアクセス |
 | `Microsoft.EntityFrameworkCore.SqlServer` | 9.0.11 | SQL Server プロバイダー |
+| `Microsoft.Data.SqlClient.SNI.runtime` | 5.2.0 | SQL Server ネイティブネットワークインターフェース |
 | `MySql.EntityFrameworkCore` | 9.0.0 | MySQL プロバイダー |
 | `Npgsql.EntityFrameworkCore.PostgreSQL` | 9.0.2 | PostgreSQL プロバイダー |
 | `Microsoft.Extensions.Http` | 10.0.0 | HTTP クライアント管理 |
@@ -325,7 +335,67 @@ public async Task InsertData()
 
 ### 📖 API ブリッジの使用例
 
-// ...existing code...
+```csharp
+// データの準備
+var data = new Dictionary<string, object>
+{
+    { "Title", "New Task" },
+    { "Description", "詳細な説明" },
+    { "DueDate", DateTime.UtcNow.AddDays(7) },
+    { "Status", "未着手" },
+    { "ClassA", "重要" }
+};
+
+// タスクの追加
+var addResponse = await bridge.Insert("2826", data);
+Console.WriteLine($"Add Task: {addResponse.StatusCode}");
+
+// 複数タスクの一括追加
+var bulkData = new List<Dictionary<string, object>>
+{
+    new Dictionary<string, object>
+    {
+        { "Title", "Task 1" },
+        { "Description", "Description 1" },
+        { "DueDate", DateTime.UtcNow.AddDays(5) },
+        { "Status", "進行中" },
+        { "ClassA", "通常" }
+    },
+    new Dictionary<string, object>
+    {
+        { "Title", "Task 2" },
+        { "Description", "Description 2" },
+        { "DueDate", DateTime.UtcNow.AddDays(10) },
+        { "Status", "未着手" },
+        { "ClassA", "低" }
+    }
+};
+
+// 一括追加実行
+var bulkInsertResponse = await bridge.BulkInsert("2826", bulkData);
+Console.WriteLine($"Bulk Insert Tasks: {bulkInsertResponse.StatusCode}");
+
+// タスクの更新
+var updateData = new Dictionary<string, object>
+{
+    { "Status", "完了" },
+    { "ClassA", "分類A" }
+};
+
+// 条件指定での一括更新
+var updateResponse = await bridge.Update("2826", updateData, new Dictionary<string, object>
+{
+    { "Status", "進行中" }
+});
+Console.WriteLine($"Update Tasks: {updateResponse.StatusCode}");
+
+// 条件指定での削除
+var deleteResponse = await bridge.Delete("2826", new Dictionary<string, object>
+{
+    { "Status", "完了" }
+});
+Console.WriteLine($"Delete Completed Tasks: {deleteResponse.StatusCode}");
+```
 
 ---
 
@@ -431,7 +501,26 @@ public class MyService
 
 ### 📖 データベースリポジトリの使用例
 
-// ...existing code...
+```csharp
+// データの取得
+var selectResult = repository.Select("123");
+foreach (var record in selectResult)
+{
+    Console.WriteLine($"ResultId: {record["ResultId"]}, Title: {record["Title"]}");
+}
+
+// 条件付きでのデータ取得
+var conditionResult = repository.Select("2826", new Dictionary<string, object>
+{
+    { "Status", "未着手" },
+    { "ClassA", "重要" }
+});
+
+foreach (var record in conditionResult)
+{
+    Console.WriteLine($"Filtered - ResultId: {record["ResultId"]}, Title: {record["Title"]}");
+}
+```
 
 ---
 
