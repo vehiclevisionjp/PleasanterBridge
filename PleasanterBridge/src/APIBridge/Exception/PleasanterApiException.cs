@@ -1,0 +1,29 @@
+using PleasanterBridge.src.APIBridge.Contracts;
+using System.Net;
+
+namespace PleasanterBridge.src.APIBridge.Exception
+{
+    internal class PleasanterApiException : System.Exception
+    {
+        public PleasanterApiResponse ResponseInfo { get; }
+
+        public HttpStatusCode StatusCode => (HttpStatusCode)ResponseInfo.StatusCode;
+
+        public PleasanterApiException(
+            string message,
+            PleasanterApiResponse responseInfo,
+            System.Exception? innerException = null)
+            : base(message, innerException)
+        {
+            ResponseInfo = responseInfo;
+        }
+        public override string ToString()
+        {
+            return $"Pleasanter API Error ({StatusCode}): {Message}\n" +
+                   $"URL: {ResponseInfo.Url}\n" +
+                   $"Response Message: {ResponseInfo.Message}\n" +
+                   $"Sent Data: {ResponseInfo.SendData}\n" +
+                   $"{base.ToString()}";
+        }
+    }
+}
