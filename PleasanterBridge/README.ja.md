@@ -42,7 +42,7 @@ cd C:\nugetRepo\PleasanterBridge\PleasanterBridge
 dotnet pack -c Release -o ./nupkg
 ```
 
-生成された `PleasanterBridge.1.3.2-local.nupkg` が `PleasanterBridge\nupkg\` フォルダに出力されます。
+生成された `PleasanterBridge.1.4.0-local.nupkg` が `PleasanterBridge\nupkg\` フォルダに出力されます。
 
 ### ステップ 2: ローカルフォルダを NuGet ソースとして登録
 
@@ -55,7 +55,7 @@ dotnet nuget add source "C:\nugetRepo\PleasanterBridge\PleasanterBridge\nupkg" -
 ### ステップ 3: 利用したいプロジェクトへインストール
 
 ```powershell
-dotnet add package PleasanterBridge --version 1.3.2-local
+dotnet add package PleasanterBridge --version 1.4.0-local
 ```
 
 > 💡 `-local` サフィックス付きのバージョンを指定してください。更新時はパッケージ再ビルド後、ローカルキャッシュをクリア（`dotnet nuget locals all --clear`）すると確実です。
