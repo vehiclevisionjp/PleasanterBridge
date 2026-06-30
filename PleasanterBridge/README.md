@@ -1,10 +1,19 @@
 # PleasanterBridge
 
+🌐 **Language**: **English** | [日本語](./README.ja.md)
+
 PleasanterBridge is a .NET library that simplifies API access and direct database access (Select only) to [Pleasanter](https://pleasanter.org/).
+
+> ⚠️ **Provisional Distribution**
+> This library is currently in a provisional phase and is intended to be **consumed via a local NuGet repository**.
+> It has **not** been published to the public NuGet feed (nuget.org) yet. Please follow the
+> [Using a Local NuGet Repository](#-using-a-local-nuget-repository-provisional) steps below to install it.
+
+---
 
 ## 🎯 Key Features
 
-### 1. **API Bridge (`IPleasanterApiBridge`)**
+### 1. API Bridge (`IPleasanterApiBridge`)
 Execute data creation, updates, and deletions using Pleasanter's REST API.
 
 - **Insert**: Insert a single record
@@ -19,7 +28,40 @@ Execute data creation, updates, and deletions using Pleasanter's REST API.
 Direct SQL access to the Pleasanter database for reading data (Select only).
 
 - **Select**: Retrieve data by ReferenceID or SiteID
-- **Conditional Select**: Filter data using Dictionary-based conditions
+- **Conditional Select**: Filter data using Dictionary-based conditions (supports array matching on Class columns)
+
+---
+
+## 📦 Using a Local NuGet Repository (Provisional)
+
+### Step 1: Build the package
+
+Pack the `PleasanterBridge` project locally as a NuGet package.
+
+```powershell
+cd C:\nugetRepo\PleasanterBridge\PleasanterBridge
+dotnet pack -c Release -o ./nupkg
+```
+
+The generated `PleasanterBridge.1.3.2-local.nupkg` will be output to the `PleasanterBridge\nupkg\` folder.
+
+### Step 2: Register the local folder as a NuGet source
+
+```powershell
+dotnet nuget add source "C:\nugetRepo\PleasanterBridge\PleasanterBridge\nupkg" --name LocalPleasanterBridge
+```
+
+> In Visual Studio, add the folder under
+> __Tools > NuGet Package Manager > Package Manager Settings > Package Sources__.
+
+### Step 3: Install into your project
+
+```powershell
+dotnet add package PleasanterBridge --version 1.3.2-local
+```
+
+> 💡 Specify the `-local` suffixed version. When updating, rebuild the package and clear the local cache
+> (`dotnet nuget locals all --clear`) to ensure the latest bits are restored.
 
 ---
 
@@ -67,8 +109,6 @@ The generated package will be output to the `PleasanterBridge\nupkg\` folder.
 
 ## 🔧 Dependencies
 
-This library depends on the following NuGet packages:
-
 | Package Name | Version | Purpose |
 |------------|----------|------|
 | `Microsoft.EntityFrameworkCore` | 9.0.11 | Database access |
@@ -91,15 +131,11 @@ This library depends on the following NuGet packages:
 
 ## 🚀 Usage
 
-PleasanterBridge provides two features: **API Bridge** and **Database Repository**, each supporting **3 initialization methods**.
+Both the API Bridge and Database Repository support **3 initialization methods**.
 
----
+### 1️⃣ API Bridge (`IPleasanterApiBridge`)
 
-## 1️⃣ API Bridge (`IPleasanterApiBridge`)
-
-### 📌 Initialization Methods
-
-#### **Method A: Pass Values Directly During Instantiation**
+#### Method A: Pass values directly
 
 ```csharp
 using PleasanterBridge.src.APIBridge;
@@ -143,7 +179,7 @@ var bridgePostgreSQL = new PleasanterAPIBridge(
 );
 ```
 
-#### **Method B: Manual DI (Pass Settings Instance)**
+#### Method B: Manual DI (pass a Settings instance)
 
 ```csharp
 using PleasanterBridge.src.APIBridge;
@@ -161,13 +197,10 @@ var settings = new PleasanterSettings(
     databaseType: DatabaseType.PostgreSQL
 );
 
-var httpClient = new HttpClient();
-var bridge = new PleasanterAPIBridge(httpClient, settings);
+var bridge = new PleasanterAPIBridge(new HttpClient(), settings);
 ```
 
-#### **Method C: Register with DI Container (Recommended)**
-
-**Configuration in `Program.cs`:**
+#### Method C: Register with DI container (recommended)
 
 ```csharp
 using PleasanterBridge.src.Configuration;
@@ -186,19 +219,19 @@ var settings = new PleasanterSettings(
     databaseType: DatabaseType.PostgreSQL
 );
 
-// Register PleasanterBridge in DI container
+// Register PleasanterBridge (API + DB) in the DI container
 builder.Services.AddPleasanterBridge(settings);
 
 var app = builder.Build();
 app.Run();
 ```
 
-**Usage in Controllers or Services:**
+### 📖 API Bridge Examples
+
+#### Both Dictionary and class instances are supported
 
 ```csharp
-using PleasanterBridge.src.APIBridge;
-
-public class MyService
+public class ResultRecord
 {
     private readonly IPleasanterApiBridge _bridge;
 
@@ -261,15 +294,21 @@ public class UpdateData
 
 **Dictionary Version:**
 ```csharp
+// Dictionary version
 var insertData = new Dictionary<string, object>
 {
   { "Title", "New Title" },
     { "Body", "Body Content" },
     { "ClassA", "Category A" },
     { "NumA", 100 },
-    { "DateA", "2025/01/01" },
+    { "DateA", DateTime.Now },
     { "CheckA", true }
 };
+var response = await bridge.Insert(2826, insertData);
+
+// Class instance version
+var record = new ResultRecord { Title = "New Title", ClassA = "Category A", NumA = 100 };
+var response2 = await bridge.Insert(2826, record);
 
 var response = await bridge.Insert("2826", insertData);
 ```
@@ -290,7 +329,7 @@ var response = await bridge.Insert("2826", insertData);
 Console.WriteLine($"StatusCode: {response.StatusCode}, Id: {response.Id}");
 ```
 
-#### **Bulk Insert**
+**Update by conditions**
 
 **Class Instance Version:**
 ```csharp
@@ -303,7 +342,7 @@ new() { Title = "Data 2", ClassA = "Category 2", NumA = 2 }
 var response = await bridge.BulkInsert("2826", dataList);
 ```
 
-#### **Update Record (by ID)**
+**Upsert / Delete**
 
 **Class Instance Version:**
 ```csharp
@@ -347,7 +386,13 @@ var upsertData = new ResultRecord
 };
 
 var matchColumns = new List<string> { "ClassA", "ClassB" };
-var response = await bridge.Upsert("2826", matchColumns, upsertData);
+await bridge.Upsert(2826, matchColumns, insertData);
+
+// Delete by ID
+await bridge.Delete(12345);
+
+// Delete by conditions
+await bridge.Delete(2826, new Dictionary<string, object> { { "Status", 900 } });
 ```
 
 #### **Delete Record (by ID)**
@@ -408,7 +453,8 @@ var repositoryPostgreSQL = new PleasanterRepository(
 );
 ```
 
-#### **Method B: Manual DI (Pass Settings Instance)**
+// By ReferenceID
+var byId = repository.Select(67);
 
 ```csharp
 using PleasanterBridge.src.Configuration;
@@ -489,11 +535,9 @@ public class MyService
 
 ## ⚙️ Configuration Classes
 
-### **`IPleasanterSettings` / `PleasanterSettings`**
+### `PleasanterSettings` (API + DB access)
 
-Manages settings required for both API access and DB access.
-
-| Property Name | Type | Description |
+| Property | Type | Description |
 |------------|------|------|
 | `ApiyKey` | `string` | Pleasanter API key |
 | `Url` | `string` | Pleasanter URL |
@@ -503,7 +547,7 @@ Manages settings required for both API access and DB access.
 | `Password` | `string` | Database password |
 | `DatabaseType` | `DatabaseType` | Database type (SqlServer/MySQL/PostgreSQL) |
 
-### **`IConnectionSettings` / `ConnectionSettings`**
+### `ConnectionSettings` (DB access only)
 
 Manages settings for DB access only.
 
@@ -558,7 +602,7 @@ Bug reports and feature suggestions are welcome via GitHub Issues or Pull Reques
 
 - [Pleasanter Official Site](https://pleasanter.org/)
 - [Pleasanter API Documentation](https://pleasanter.org/manual/api)
-- [GitHub Repository](https://github.com/TakutoOsugi/PleasanterBridge)
+- [GitHub Repository](https://github.com/vehiclevisionjp/PleasanterBridge)
 
 ---
 
