@@ -1,2 +1,3 @@
-call cd C:\nugetRepo\PleasanterBridge\PleasanterBridge
-call dotnet pack -c Release -o ./nupkg
+@echo off
+cd /d "%~dp0"
+dotnet pack -c Release -o ./nupkg

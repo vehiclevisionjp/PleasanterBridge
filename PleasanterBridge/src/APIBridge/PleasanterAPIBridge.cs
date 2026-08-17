@@ -292,10 +292,11 @@ namespace PleasanterBridge.src.APIBridge
             string? completionTime = dataSet.TryGetValue(PleasanterApiRequestKey.CompletionTime.ToKeyString(), out var ct) ? ConvertToDateString(ct) : null;
             decimal? workValue = dataSet.TryGetValue(PleasanterApiRequestKey.WorkValue.ToKeyString(), out var wv) && wv is decimal d1 ? d1 : null;
             decimal? progressRate = dataSet.TryGetValue(PleasanterApiRequestKey.ProgressRate.ToKeyString(), out var pr) && pr is decimal d2 ? d2 : null;
+            int? status = dataSet.TryGetValue(PleasanterApiRequestKey.Status.ToKeyString(), out var s) ? ConvertToStatus(s) : null;
 
             PleasanterApiRequest pleasanterApiRequest = (PleasanterApiRequest)Activator.CreateInstance(
                 typeof(PleasanterApiRequest),
-                title, body, startTime, completionTime, workValue, progressRate
+                title, body, startTime, completionTime, workValue, progressRate, status
             )!;
 
             pleasanterApiRequest.ClassHash = dataSet
@@ -355,6 +356,16 @@ namespace PleasanterBridge.src.APIBridge
             {
                 DateTime dt => dt.ToString("yyyy/MM/dd HH:mm:ss"),
                 string s => s,
+                _ => null
+            };
+        }
+
+        private static int? ConvertToStatus(object? value)
+        {
+            return value switch
+            {
+                int status => status,
+                long status when status is >= int.MinValue and <= int.MaxValue => (int)status,
                 _ => null
             };
         }
