@@ -8,6 +8,7 @@ namespace PleasanterBridge.src.APIBridge.Mapping
         CompletionTime,
         WorkValue,
         ProgressRate,
+        Status,
         // Hash系
         Class,
         Num,
