@@ -21,6 +21,11 @@ namespace PleasanterBridge.src.Utilities
      
                 // 空文字列は除外
                 if (value is string str && string.IsNullOrEmpty(str)) continue;
+
+                if (value.GetType().IsEnum)
+                {
+                    value = System.Convert.ToInt64(value);
+                }
        
                 dictionary[property.Name] = value;
             }
