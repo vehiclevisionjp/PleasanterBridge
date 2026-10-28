@@ -7,9 +7,9 @@
     <Nullable>enable</Nullable>
     
     <PackageId>PleasanterBridge</PackageId>
-    <Version>1.5.2-local</Version>
-    <Authors>YourName</Authors>
-    <Company>YourCompany</Company>
+    <Version>1.5.3-local</Version>
+    <Authors>Takuto Osugi</Authors>
+    <Company>PMC</Company>
     <Description>Pleasanter API Bridge Library</Description>
     <PackageProjectUrl>https://github.com/TakutoOsugi/PleasanterBridge</PackageProjectUrl>
     <RepositoryUrl>https://github.com/TakutoOsugi/PleasanterBridge</RepositoryUrl>
