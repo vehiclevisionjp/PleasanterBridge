@@ -118,17 +118,23 @@ public class PleasanterAPIBridgeTest
     {
         var bridge = CreateBridge();
         var refId = 1;
-        var data = new Dictionary<string, object>();
+        var data = new Dictionary<string, object> { { "Status", 100 } };
         var url = "http://update";
         var response = new PleasanterApiResponse { StatusCode = 200, Message = "Updated" };
+        Dictionary<string, object>? sentRequest = null;
 
         _urlProviderMock.Setup(x => x.GetItemUpdateUrl(refId)).Returns(url);
-        _responseHandlerMock.Setup(x => x.SendPost(It.IsAny<Dictionary<string, object>>(), url)).ReturnsAsync(response);
+        _responseHandlerMock
+            .Setup(x => x.SendPost(It.IsAny<Dictionary<string, object>>(), url))
+            .Callback<Dictionary<string, object>, string>((request, _) => sentRequest = request)
+            .ReturnsAsync(response);
 
         var result = await bridge.Update(refId, data);
 
         Console.WriteLine($"Update_ByReferenceId_CallsResponseHandler: StatusCode={result.StatusCode}, Message={result.Message}");
         Assert.Equal(response, result);
+        Assert.NotNull(sentRequest);
+        Assert.Equal(100, sentRequest["Status"]);
     }
 
     [Fact]
