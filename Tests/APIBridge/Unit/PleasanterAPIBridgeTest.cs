@@ -7,6 +7,16 @@ using PleasanterBridge.src.DataRepository.Service;
 
 public class PleasanterAPIBridgeTest
 {
+    private enum TestStatus
+    {
+        Completed = 100
+    }
+
+    private class StatusUpdateData
+    {
+        public TestStatus Status { get; set; }
+    }
+
     private readonly Mock<IPleasanterSettings> _settingsMock = new();
     private readonly Mock<IPleasanterUrlProvider> _urlProviderMock = new();
     private readonly Mock<IPleasanterRepository> _repositoryMock = new();
@@ -78,6 +88,29 @@ public class PleasanterAPIBridgeTest
 
         Console.WriteLine($"BulkInsert_CallsResponseHandlerAndReturnsResult: StatusCode={result.StatusCode}, Message={result.Message}");
         Assert.Equal(response, result);
+    }
+
+    [Fact]
+    public async Task Update_WithClassStatus_SendsStatus()
+    {
+        var bridge = CreateBridge();
+        var refId = 1;
+        var data = new StatusUpdateData { Status = TestStatus.Completed };
+        var url = "http://update";
+        var response = new PleasanterApiResponse { StatusCode = 200, Message = "Updated" };
+        Dictionary<string, object>? sentRequest = null;
+
+        _urlProviderMock.Setup(x => x.GetItemUpdateUrl(refId)).Returns(url);
+        _responseHandlerMock
+            .Setup(x => x.SendPost(It.IsAny<Dictionary<string, object>>(), url))
+            .Callback<Dictionary<string, object>, string>((request, _) => sentRequest = request)
+            .ReturnsAsync(response);
+
+        var result = await bridge.Update(refId, data);
+
+        Assert.Equal(response, result);
+        Assert.NotNull(sentRequest);
+        Assert.Equal(100, sentRequest["Status"]);
     }
 
     [Fact]
