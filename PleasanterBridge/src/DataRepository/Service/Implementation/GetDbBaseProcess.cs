@@ -78,6 +78,35 @@ namespace PleasanterBridge.src.DataRepository.Service.Implementation
 
             entities = BinarySetup(entities);
             entities = NormalizeReferenceId(entities);
+            entities = SetItemTitles(entities);
+
+            return entities;
+        }
+
+        private List<Dictionary<string, object>> SetItemTitles(List<Dictionary<string, object>> entities)
+        {
+            List<long> referenceIds = entities
+                .Where(entity => entity.TryGetValue("ReferenceId", out object? value) && value != null)
+                .Select(entity => Convert.ToInt64(entity["ReferenceId"]))
+                .Distinct()
+                .ToList();
+
+            Dictionary<long, string?> itemTitles = Items
+                .Where(item => referenceIds.Contains(item.ReferenceId))
+                .ToDictionary(item => item.ReferenceId, item => item.Title);
+
+            entities.ForEach(entity =>
+            {
+                entity.Remove("Title");
+
+                if (entity.TryGetValue("ReferenceId", out object? value) &&
+                    value != null &&
+                    itemTitles.TryGetValue(Convert.ToInt64(value), out string? title) &&
+                    title != null)
+                {
+                    entity["Title"] = title;
+                }
+            });
 
             return entities;
         }
