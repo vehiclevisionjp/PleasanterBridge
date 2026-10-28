@@ -17,6 +17,8 @@ namespace PleasanterBridge.src.APIBridge.Contracts
 
         public decimal? ProgressRate { get; }
 
+        public int? Status { get; }
+
         public Dictionary<string, string> ClassHash { get; set; } = new();
         public Dictionary<string, decimal> NumHash { get; set; } = new();
         public Dictionary<string, string> DateHash { get; set; } = new();
@@ -31,7 +33,8 @@ namespace PleasanterBridge.src.APIBridge.Contracts
             string? startTime,
             string? completionTime,
             decimal? workValue,
-            decimal? progressRate
+            decimal? progressRate,
+            int? status
         )
         {
             Title = title;
@@ -40,6 +43,7 @@ namespace PleasanterBridge.src.APIBridge.Contracts
             CompletionTime = completionTime;
             WorkValue = workValue;
             ProgressRate = progressRate;
+            Status = status;
         }
     }
 }
